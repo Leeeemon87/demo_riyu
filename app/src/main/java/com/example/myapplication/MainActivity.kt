@@ -26,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {
@@ -52,7 +53,6 @@ class MainActivity : AppCompatActivity() {
                 if (checkPermission()) {
                     startRecording()
                     recordButton.text = "Stop"
-
                 } else {
                     requestPermission()
                 }
@@ -176,6 +176,22 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
                     Toast.makeText(mainActivity2, "upload succeed", Toast.LENGTH_LONG).show()
+                }
+                val responseData = response.body()?.string() // 获取响应数据
+                if (responseData != null) {
+                    // 使用 JSON 解析库解析服务器返回的 JSON 数据
+                    try {
+                        val jsonObject = JSONObject(responseData)
+                        val code = jsonObject.getString("code")
+                        val info = jsonObject.getString("info")
+                        val word = jsonObject.getString("data")
+                        // 处理解析后的数据
+                        runOnUiThread {
+                            Toast.makeText(mainActivity2, "Status: $code, Message: $word", Toast.LENGTH_LONG).show()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         })
