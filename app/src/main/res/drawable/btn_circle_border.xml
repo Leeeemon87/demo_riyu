@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <stroke
+        android:width="2dp"
+        android:color="@color/button_border_color" /> <!-- 设置边框颜色和宽度 -->
+    <solid android:color="@android:color/transparent" /> <!-- 设置填充颜色为透明，因为我们只需要边框 -->
+</shape>
