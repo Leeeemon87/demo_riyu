@@ -6,6 +6,7 @@ import android.media.MediaRecorder
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.navigation.ui.AppBarConfiguration
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -42,17 +43,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val recordButton = findViewById<Button>(R.id.recordButton)
+        val recordButton = findViewById<ImageButton>(R.id.recordButton)
         val uploadButton = findViewById<Button>(R.id.uploadButton)
 
         recordButton.setOnClickListener {
             if (isRecording) {
                 stopRecording()
-                recordButton.text = "Record"
+                recordButton.setImageResource(R.drawable.ic_record)
             } else {
                 if (checkPermission()) {
                     startRecording()
-                    recordButton.text = "Stop"
+                    recordButton.setImageResource(R.drawable.ic_stop)
                 } else {
                     requestPermission()
                 }
@@ -139,6 +140,7 @@ class MainActivity : AppCompatActivity() {
         uploadButton.visibility = View.VISIBLE
     }
 
+
     private fun uploadRecording() {
         val uploadUrl = "http://49.233.22.132:8080/demo/upload"
         val outputFile = "${externalCacheDir?.absolutePath}/recording.wav"
@@ -162,6 +164,8 @@ class MainActivity : AppCompatActivity() {
             .url(uploadUrl)
             .post(requestBody)
             .build()
+
+
 
         val mainActivity = this@MainActivity
         val mainActivity2 = this@MainActivity
