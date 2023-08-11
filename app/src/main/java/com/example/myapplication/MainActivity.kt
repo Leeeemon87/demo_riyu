@@ -28,7 +28,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import org.json.JSONObject
-
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,9 +47,11 @@ class MainActivity : AppCompatActivity() {
         val uploadButton = findViewById<Button>(R.id.uploadButton)
 
         recordButton.setOnClickListener {
-            if (isRecording) {
-                stopRecording()
+            if (isRecording) GlobalScope.launch(Dispatchers.Main){
                 recordButton.setImageResource(R.drawable.ic_record)
+                delay(1000)
+                stopRecording()
+
             } else {
                 if (checkPermission()) {
                     startRecording()
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startRecording() {
-        val outputFile = "${externalCacheDir?.absolutePath}/recording.wav"
+        val outputFile = "${externalCacheDir?.absolutePath}/recording3.wav"
         mediaRecorder = MediaRecorder()
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
@@ -143,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun uploadRecording() {
         val uploadUrl = "http://49.233.22.132:8080/demo/upload"
-        val outputFile = "${externalCacheDir?.absolutePath}/recording.wav"
+        val outputFile = "${externalCacheDir?.absolutePath}/recording3.wav"
 
         val file = File(outputFile)
 
@@ -155,7 +157,7 @@ class MainActivity : AppCompatActivity() {
             .addFormDataPart("token", "your_token") // 添加 token 参数
             .addFormDataPart(
                 "file",
-                "recording.wav",
+                "recording3.wav",
                 RequestBody.create(MediaType.parse("audio/wav"), file)
             )
             .build()
