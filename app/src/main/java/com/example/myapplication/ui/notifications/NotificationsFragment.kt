@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.notifications
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentNotificationsBinding
+import com.example.myapplication.PitchesActivity
 
 class NotificationsFragment : Fragment() {
 
@@ -16,6 +18,8 @@ class NotificationsFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +36,16 @@ class NotificationsFragment : Fragment() {
         notificationsViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+        val pitchButton =binding.testButton
+
+        // 在 NotificationFragment.kt 中的按钮点击事件中
+        pitchButton.setOnClickListener {
+            val intent = Intent(requireContext(), PitchesActivity::class.java)
+            intent.putExtra("key", "value") // 添加要传递的参数
+            startActivity(intent)
+        }
+
         return root
     }
 

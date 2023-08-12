@@ -8,4 +8,6 @@
     <string name="stop">Stop</string>
     <string name="record_stop_button">Recordbutton</string>
     <string name="title_activity_home_page">HomePageActivity</string>
+    <string name="title_activity_pitches">PitchesActivity</string>
+    <string name="pitches">Pitches</string>
 </resources>
