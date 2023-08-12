@@ -15,9 +15,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+import android.content.Context
 import android.Manifest
 import android.content.pm.PackageManager
+import android.provider.Settings
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,7 +33,8 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.File
 import org.json.JSONObject
-
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 class DashboardFragment : Fragment() {
 
@@ -137,6 +139,7 @@ class DashboardFragment : Fragment() {
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
         mediaRecorder.setOutputFile(outputFile)
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
         val uploadButton = binding.uploadButton
         uploadButton.visibility = View.INVISIBLE
         try {
@@ -156,6 +159,37 @@ class DashboardFragment : Fragment() {
         uploadButton.visibility = View.VISIBLE
     }
 
+    fun copyAndRenameWavFile(sourceFilePath: String, destinationFilePath: String) {
+        try {
+            val sourceFile = File(sourceFilePath)
+            if (!sourceFile.exists()) {
+                println("Source file does not exist.")
+                return
+            }
+
+            val destinationFile = File(destinationFilePath)
+            if (destinationFile.exists()) {
+                println("Destination file already exists.")
+                return
+            }
+
+            FileInputStream(sourceFile).use { inputStream ->
+                FileOutputStream(destinationFile).use { outputStream ->
+                    val buffer = ByteArray(1024)
+                    var bytesRead: Int
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                        outputStream.write(buffer, 0, bytesRead)
+                    }
+                }
+            }
+
+            println("File copied and renamed successfully.")
+        } catch (e: IOException) {
+            println("Error: ${e.message}")
+        }
+    }
+
+
     private fun uploadRecording() {
         val uploadUrl = "http://49.233.22.132:8080/demo/upload"
         val outputFile = "${requireContext().externalCacheDir?.absolutePath}/recording3.wav"
@@ -163,11 +197,14 @@ class DashboardFragment : Fragment() {
         val file = File(outputFile)
 
         val client = OkHttpClient()
+        // 从 SharedPreferences 获取 token
+        val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("token", null)
 
         val requestBody: RequestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("username", "your_username") // 添加 username 参数
-            .addFormDataPart("token", "your_token") // 添加 token 参数
+            .addFormDataPart("username", "Zhuxu") // 添加 username 参数
+            .addFormDataPart("token", token) // 添加 token 参数
             .addFormDataPart(
                 "file",
                 "recording3.wav",
@@ -200,15 +237,85 @@ class DashboardFragment : Fragment() {
                         val code = jsonObject.getString("code")
                         val info = jsonObject.getString("info")
                         val word = jsonObject.getString("data")
+                        val requestBody1 = MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("token", token)
+                            .addFormDataPart("filename", "recording3.wav")
+                            .addFormDataPart("words", word) // 使用资源文件中的字符串
+                            .build()
+
+                        val client = OkHttpClient()
+
+                        val url = "http://49.233.22.132:8080/demo/calculate" // 替换为实际的 API URL
+                        val request = Request.Builder()
+                            .url(url)
+                            .post(requestBody1)
+                            .build()
+
+                        client.newCall(request).enqueue(object : Callback {
+                            override fun onResponse(call: Call, response: Response) {
+                                val responseData = response.body()?.string()
+                                if(responseData!=null)
+                                {
+                                    try{
+                                        val jsonObject = JSONObject(responseData)
+                                        val code = jsonObject.getString("code")
+                                        val info = jsonObject.getString("info")
+                                        val data = jsonObject.getString("data")
+                                        if(code=="0")
+                                        {
+                                            val newJsonName = "$word.json"
+                                            val cacheFilePath = "${requireContext().externalCacheDir?.absolutePath}/$newJsonName"
+                                            val cacheFile = File(cacheFilePath)
+                                            cacheFile.writeText(responseData)
+                                        }
+                                        else{
+                                            requireActivity().runOnUiThread {
+                                                Toast.makeText(requireContext(), "计算失败！返回值异常，请重试！", Toast.LENGTH_LONG).show()
+                                            }
+                                        }
+                                    }
+                                    catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                            }
+                            override fun onFailure(call: Call, e: IOException) {
+                                requireActivity().runOnUiThread {
+                                    Toast.makeText(requireContext(), "计算失败！服务器繁忙！", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        })
                         // 处理解析后的数据
                         requireActivity().runOnUiThread {
                             Toast.makeText(requireContext(), "Status: $code, Message: $word", Toast.LENGTH_LONG).show()
                         }
+                        val timestamp = System.currentTimeMillis()
+                        val folderName = "$timestamp" // 新文件夹的名称就是时间戳
+                        val folderPath = "${requireContext().externalCacheDir?.absolutePath}/$folderName"
+
+                        val folder = File(folderPath)
+                        if (!folder.exists()) {
+                            folder.mkdirs() // 创建新文件夹
+                        }
+
+                        val newFileName = "$word.wav"
+                        val destinationFilePath = "$folderPath/$newFileName" // 新文件的完整路径
+
+                        val sourceFilePath = "${requireContext().externalCacheDir?.absolutePath}/recording3.wav"
+
+                        val sourceFile = File(sourceFilePath)
+                        val destinationFile = File(destinationFilePath)
+
+                        copyAndRenameWavFile(sourceFilePath, destinationFilePath)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
+
             }
         })
     }
+
+
 }
