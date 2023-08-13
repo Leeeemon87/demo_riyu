@@ -13,6 +13,9 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import org.json.JSONObject
 import java.io.InputStream
 import android.graphics.Color
+import com.github.mikephil.charting.components.LimitLine
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 
 class PitchesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPitchesBinding
@@ -116,13 +119,7 @@ class PitchesActivity : AppCompatActivity() {
             lineEntries.add(Entry(x2, y2))
 
             val lineDataSet = LineDataSet(lineEntries, hiraName)
-            // 启用数据点的值显示，并设置其格式
-            lineDataSet.setDrawValues(true)
-//            lineDataSet.valueFormatter = ValueFormatter() {
-//                override fun getFormattedValue(value: Float): String {
-//                    return hiraName
-//                }
-//            }
+            lineDataSet.lineWidth = 5f
 
             // 分配不同的颜色给每个线段
             val colorIndex = i % colors.size
@@ -130,7 +127,16 @@ class PitchesActivity : AppCompatActivity() {
             lineDataSet.color = lineColor
             lineDataSet.setDrawFilled(true)
             lineDataSet.fillColor = lineColor
-            lineDataSet.fillAlpha = 70
+            lineDataSet.fillAlpha = 90
+            // 设置数据点颜色
+            lineDataSet.setCircleColor(lineColor) // 设置为所需的颜色
+            // 禁用数据点的值显示，并设置其格式
+            lineDataSet.setDrawValues(false)
+            lineDataSet.setDrawCircles(false)
+            // 设置数据点为实心
+            lineDataSet.setDrawCircleHole(false)
+            // 设置数据点半径（大小）
+            lineDataSet.circleRadius = 2.5f // 设置为所需的半径值
 
             lineDataSets.add(lineDataSet)
         }
@@ -144,11 +150,25 @@ class PitchesActivity : AppCompatActivity() {
         meanChart.xAxis.isEnabled = true
         meanChart.axisLeft.isEnabled = true
         meanChart.axisRight.isEnabled = true
+        meanChart.xAxis.setDrawLabels(true)
 
+        // 设置垂直虚线
+        val xValues = mutableListOf<Float>()
+        for (i in 0 until listStarts.length()) {
+            xValues.add(listStarts.getDouble(i).toFloat())
+            xValues.add(listEnds.getDouble(i).toFloat())
+        }
+        setupVerticalLines(meanChart.xAxis, xValues)
+
+        val xLabels = mutableListOf<String>()
+        val xStarts = mutableListOf<Float>()
+        for (i in 0 until listStarts.length()) {
+            xStarts.add(listStarts.getDouble(i).toFloat())
+            xLabels.add(listHira.getString(i))
+        }
+        setupVerticalLinesWithLabels(meanChart.xAxis, xStarts,xLabels)
         // 刷新图表
         meanChart.invalidate()
-
-
 
         // 按钮
         val refbutton=binding.resButton
@@ -158,6 +178,41 @@ class PitchesActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun setupVerticalLinesWithLabels(xAxis: XAxis, xValues: List<Float>,xStarts: List<String>) {
+        for (i in xValues.indices) {
+            val limitLine = LimitLine(xValues[i])
+            limitLine.lineColor = Color.LTGRAY
+            limitLine.lineWidth = 1.5f
+            limitLine.enableDashedLine(10f, 10f, 0f)
+            limitLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_BOTTOM
+            limitLine.textSize = 12f
+            limitLine.textColor=Color.DKGRAY
+
+            // 设置 LimitLine 的 label，即 x 轴的值
+            limitLine.label = xStarts[i]
+            xAxis.addLimitLine(limitLine)
+        }
+    }
+
+    private fun setupVerticalLines(xAxis: XAxis, xValues: List<Float>) {
+        xAxis.removeAllLimitLines()
+
+        for (xValue in xValues) {
+            val limitLine = LimitLine(xValue)
+            limitLine.lineColor = Color.LTGRAY
+            limitLine.lineWidth = 1.5f
+            limitLine.enableDashedLine(10f, 10f, 0f)
+            limitLine.labelPosition = LimitLine.LimitLabelPosition.LEFT_TOP
+            limitLine.textSize = 8f
+            limitLine.textColor=Color.GRAY
+
+            // 设置 LimitLine 的 label，即 x 轴的值
+            limitLine.label = xValue.toString()
+
+            xAxis.addLimitLine(limitLine)
+        }
     }
 
     //读取json文件
