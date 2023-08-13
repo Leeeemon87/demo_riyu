@@ -13,6 +13,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import org.json.JSONObject
 import java.io.InputStream
 import android.graphics.Color
+import android.media.MediaPlayer
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import java.io.File
@@ -20,7 +21,8 @@ import java.io.FileInputStream
 
 class PitchesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPitchesBinding
-
+    private var isPlaying = false
+    private lateinit var mediaPlayer: MediaPlayer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPitchesBinding.inflate(layoutInflater)
@@ -33,14 +35,15 @@ class PitchesActivity : AppCompatActivity() {
 //        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back) // 设置返回图标
         supportActionBar?.setHomeButtonEnabled(true)
 
-//        val filePath = intent.getStringExtra("filePath")
-//        if (filePath.isNullOrEmpty()) {
-//            onBackPressed()
-//        }
-//        val jsonOri = loadJSONFromFile(filePath.toString())
-        val jsonOri=loadJSONFromAsset("result.json")
+        val filePath = intent.getStringExtra("jsonPath")
+        if (filePath.isNullOrEmpty()) {
+            onBackPressed()
+        }
+        val jsonOri = loadJSONFromFile(filePath.toString())
+        Log.v("jsonPath",filePath.toString())
 
-        //Log.v("jsonPath",filePath.toString())
+        //val jsonOri=loadJSONFromAsset("result.json")
+
 
         val jsonObject = JSONObject(jsonOri)
         val jsondata = jsonObject.getJSONObject("data")
@@ -65,15 +68,22 @@ class PitchesActivity : AppCompatActivity() {
         var countAll:Int=0
         var j:Int=0
 
-        while (countAll<listAllTime.length()){
+        while (countAll<listAllTime.length()-1){
             while (j<listStarts.length()){
-                val left = listStarts.getDouble(j).toFloat()
-                val right = listEnds.getDouble(j).toFloat()
+                var left = listStarts.getDouble(j).toFloat()
+                var right = listEnds.getDouble(j).toFloat()
+                if(right>=listAllTime.getDouble(listAllTime.length()-1))
+                {
+                    right=listAllTime.getDouble(listAllTime.length()-1).toFloat()
+                }
                 while (listAllTime.getDouble(countAll).toFloat() < left){
                     entries.add(Entry(listAllTime.getDouble(countAll).toFloat(), 0F))
                     countAll++
                 }
-                while (listAllTime.getDouble(countAll).toFloat() <= right){
+                while (listAllTime.getDouble(countAll).toFloat() < right){
+                    Log.v("count",countAll.toString())
+                    Log.v("right",right.toString())
+                    Log.v("time",listAllTime.getDouble(countAll).toString())
                     entries.add(Entry(listAllTime.getDouble(countAll).toFloat(), listAllValue.getDouble(countAll).toFloat()))
                     countAll++
                 }
@@ -178,15 +188,33 @@ class PitchesActivity : AppCompatActivity() {
         // 刷新图表
         meanChart.invalidate()
 
+        val audioPath = intent.getStringExtra("audioPath")
+
         // 按钮
-        val refbutton=binding.resButton
-        refbutton.setOnClickListener()
-        {
+        val refButton=binding.resButton
+        mediaPlayer = MediaPlayer()
 
+        // 按钮点击监听器
+        refButton.setOnClickListener {
+            if (!isPlaying) {
+                mediaPlayer.setDataSource(audioPath)
+                mediaPlayer.prepare()
+                mediaPlayer.setOnCompletionListener {
+                    isPlaying = false
+                    refButton.text = "播放"
+                }
+                mediaPlayer.start()
+                isPlaying = true
+                refButton.text = "暂停"
+            } else {
+                mediaPlayer.stop()
+                mediaPlayer.reset()
+                isPlaying = false
+                refButton.text = "播放"
+            }
         }
-
-
     }
+
 
     private fun loadJSONFromAsset(fileName: String): String {
         val inputStream: InputStream = assets.open(fileName)
@@ -256,5 +284,9 @@ class PitchesActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+    override fun onDestroy() {
+        mediaPlayer.release()
+        super.onDestroy()
     }
 }

@@ -25,7 +25,8 @@ class HistoryAdapter(private val historyData: List<HistoryItem>) :
         holder.binding.microphoneIcon.setOnClickListener {
             // 在这里处理点击话筒图标的跳转逻辑，传递文件路径参数给 PitchesActivity
             val intent = Intent(holder.itemView.context, PitchesActivity::class.java)
-            intent.putExtra("filePath", historyItem.filePath)
+            intent.putExtra("audioPath", historyItem.audioPath)
+            intent.putExtra("jsonPath", historyItem.jsonPath)
             holder.itemView.context.startActivity(intent)
         }
     }
