@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentNotificationsBinding
 import com.example.myapplication.PitchesActivity
+import com.example.myapplication.HistoryActivity
 
 class NotificationsFragment : Fragment() {
 
@@ -44,7 +45,7 @@ class NotificationsFragment : Fragment() {
         val hisButton =binding.historyButton
         // 在 NotificationFragment.kt 中的按钮点击事件中
         hisButton.setOnClickListener {
-            val intent = Intent(requireContext(), PitchesActivity::class.java)
+            val intent = Intent(requireContext(), HistoryActivity::class.java)
             intent.putExtra("key", "value") // 添加要传递的参数
             startActivity(intent)
         }

@@ -15,7 +15,8 @@ import java.io.InputStream
 import android.graphics.Color
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import java.io.File
+import java.io.FileInputStream
 
 class PitchesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPitchesBinding
@@ -32,8 +33,12 @@ class PitchesActivity : AppCompatActivity() {
 //        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back) // 设置返回图标
         supportActionBar?.setHomeButtonEnabled(true)
 
-        val jsonOri = loadJSONFromAsset("result.json")
-
+        val filePath = intent.getStringExtra("filePath")
+        if (filePath.isNullOrEmpty()) {
+            onBackPressed()
+        }
+        val jsonOri = loadJSONFromFile(filePath.toString())
+        Log.v("jsonPath",filePath.toString())
         val jsonObject = JSONObject(jsonOri)
         val jsondata = jsonObject.getJSONObject("data")
 
@@ -216,14 +221,19 @@ class PitchesActivity : AppCompatActivity() {
     }
 
     //读取json文件
-    private fun loadJSONFromAsset(fileName: String): String {
-        val inputStream: InputStream = assets.open(fileName)
+    private fun loadJSONFromFile(filePath: String): String {
+        val file = File(filePath)
+        if (!file.exists()) {
+            return ""
+        }
+        val inputStream: InputStream = FileInputStream(file)
         val size: Int = inputStream.available()
         val buffer = ByteArray(size)
         inputStream.read(buffer)
         inputStream.close()
         return String(buffer, Charsets.UTF_8)
     }
+
 
     // 返回至上一个页面，而非主页
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
