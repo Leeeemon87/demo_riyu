@@ -5,17 +5,14 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.databinding.ActivityPitchesBinding
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import org.json.JSONObject
 import java.io.InputStream
-
+import android.graphics.Color
 
 class PitchesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPitchesBinding
@@ -54,10 +51,25 @@ class PitchesActivity : AppCompatActivity() {
 
         val entries = mutableListOf<Entry>()
 
-        for (i in 0 until listAllTime.length()) {
-            val x = listAllTime.getDouble(i).toFloat() // 提取 x 坐标数据
-            val y = listAllValue.getDouble(i).toFloat() // 提取 y 坐标数据
-            entries.add(Entry(x, y))
+        var countAll:Int=0
+        var j:Int=0
+
+        while (countAll<listAllTime.length()-100){
+            while (j<listStarts.length()){
+                val left = listStarts.getDouble(j).toFloat()
+                val right = listEnds.getDouble(j).toFloat()
+                while (listAllTime.getDouble(countAll).toFloat() < left){
+                    entries.add(Entry(listAllTime.getDouble(countAll).toFloat(), 0F))
+                    countAll++
+                }
+                while (listAllTime.getDouble(countAll).toFloat() <= right){
+                    entries.add(Entry(listAllTime.getDouble(countAll).toFloat(), listAllValue.getDouble(countAll).toFloat()))
+                    countAll++
+                }
+                j++
+            }
+            entries.add(Entry(listAllTime.getDouble(countAll).toFloat(), 0F))
+            countAll++
         }
 
         val dataSet = LineDataSet(entries, "Label")
@@ -68,55 +80,74 @@ class PitchesActivity : AppCompatActivity() {
         waveformChart.data = lineData
 
         // Customize chart appearance and behavior as needed
-        waveformChart.description.isEnabled = true
+        waveformChart.description.isEnabled = false
+        waveformChart.legend.isEnabled = false
+
         waveformChart.axisLeft.isEnabled = true
         waveformChart.axisRight.isEnabled = true
         waveformChart.xAxis.isEnabled = true
-        waveformChart.legend.isEnabled = true
+
+        waveformChart.axisLeft.axisMinimum=0F
+        waveformChart.axisLeft.axisMaximum=300F
+        waveformChart.axisRight.axisMinimum=0F
+        waveformChart.axisRight.axisMaximum=300F
+
+        waveformChart.xAxis.axisMaximum=listEnds.getDouble(listEnds.length()-1).toFloat()+0.1F
+        waveformChart.xAxis.axisMinimum=listEnds.getDouble(0).toFloat()-0.1F
 
         waveformChart.invalidate() // Refresh the chart
 
-        // 简化版假名
-        val barChart: BarChart = binding.barChart
+        //简化假名
+        val meanChart: LineChart = binding.barChart
+        val lineDataSets = mutableListOf<ILineDataSet>() // 用于存储所有线的数据集
 
-        // 创建柱状图数据集
-        val barEntries = mutableListOf<BarEntry>()
+        // 定义颜色数组，用于为每个线段分配不同的颜色
+        val colors = arrayOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA,Color.CYAN)
 
-        // 添加柱状图数据
-//        for (i in 0 until listStarts.length()) {
-//            val x = listStarts.getDouble(i).toFloat() // 提取 x 坐标数据
-//            val y = listMean.getDouble(i).toFloat() // 提取 y 坐标数据
-//            barEntries.add(BarEntry(x, y))
-//            val x2 = listEnds.getDouble(i).toFloat() // 提取 x 坐标数据
-//            val y2 = listMean.getDouble(i).toFloat() // 提取 y 坐标数据
-//            barEntries.add(BarEntry(x2, y2))
-//        }
+        for (i in 0 until listHira.length()) {
+            val hiraName = listHira.getString(i)
+            val x1 = listStarts.getDouble(i).toFloat()
+            val y1 = listMean.getDouble(i).toFloat()
+            val x2 = listEnds.getDouble(i).toFloat()
+            val y2 = listMean.getDouble(i).toFloat()
 
-        barEntries.add(BarEntry(0f, 30f))
-        barEntries.add(BarEntry(1f, 80f))
-        barEntries.add(BarEntry(2f, 60f))
-        barEntries.add(BarEntry(3f, 50f))
-        // gap of 2f
-        // gap of 2f
-        barEntries.add(BarEntry(5f, 70f))
-        barEntries.add(BarEntry(6f, 60f))
-        // 创建柱状图数据集
-        val barDataSet = BarDataSet(barEntries, "BarDataSet")
+            val lineEntries = mutableListOf<Entry>()
+            lineEntries.add(Entry(x1, y1))
+            lineEntries.add(Entry(x2, y2))
 
-        // 设置柱状之间的间隔
-        barDataSet.barBorderWidth =0.4f
-        val barData = BarData(barDataSet)
+            val lineDataSet = LineDataSet(lineEntries, hiraName)
+            // 启用数据点的值显示，并设置其格式
+            lineDataSet.setDrawValues(true)
+//            lineDataSet.valueFormatter = ValueFormatter() {
+//                override fun getFormattedValue(value: Float): String {
+//                    return hiraName
+//                }
+//            }
 
-        // 设置柱状图数据
-        barChart.data = barData
+            // 分配不同的颜色给每个线段
+            val colorIndex = i % colors.size
+            val lineColor = colors[colorIndex]
+            lineDataSet.color = lineColor
+            lineDataSet.setDrawFilled(true)
+            lineDataSet.fillColor = lineColor
+            lineDataSet.fillAlpha = 70
 
-        // 设置柱状图外观和行为
-        barChart.description.isEnabled = true
-        barChart.xAxis.isEnabled = true
-        barChart.axisLeft.isEnabled = true
-        barChart.axisRight.isEnabled = true
+            lineDataSets.add(lineDataSet)
+        }
 
-        barChart.invalidate() // 刷新柱状图
+        val meanData = LineData(lineDataSets)
+        meanChart.data = meanData
+
+        // 设置图表外观和行为
+        meanChart.description.isEnabled = false
+        meanChart.legend.isEnabled = true
+        meanChart.xAxis.isEnabled = true
+        meanChart.axisLeft.isEnabled = true
+        meanChart.axisRight.isEnabled = true
+
+        // 刷新图表
+        meanChart.invalidate()
+
 
 
         // 按钮
