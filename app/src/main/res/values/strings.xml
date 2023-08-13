@@ -11,4 +11,5 @@
     <string name="title_activity_pitches">PitchesActivity</string>
     <string name="pitches">pitches</string>
     <string name="zhuxu">Zhuxu</string>
+    <string name="history">history</string>
 </resources>
