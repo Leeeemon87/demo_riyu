@@ -36,15 +36,21 @@ import org.json.JSONObject
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.LineDataSet
+import android.graphics.Color
+import com.github.mikephil.charting.data.LineData
+import android.os.Handler
+import android.os.Looper
+import com.github.mikephil.charting.data.Entry
 
 class DashboardFragment : Fragment() {
-
     private val recordPermissionCode = 101
-    private lateinit var mediaRecorder: MediaRecorder
     private var isRecording = false
-
+    private var updateRunnable: Runnable? = null
     private var _binding: FragmentDashboardBinding? = null
-
+    private var mediaRecorder: MediaRecorder? = null
+    private var isMediaRecorderReleased = false
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
@@ -70,6 +76,7 @@ class DashboardFragment : Fragment() {
         recordButton.setOnClickListener {
             if (isRecording) GlobalScope.launch(Dispatchers.Main){
                 recordButton.setImageResource(R.drawable.ic_record)
+
                 delay(400)
                 stopRecording()
 
@@ -86,14 +93,12 @@ class DashboardFragment : Fragment() {
             uploadRecording()
             val uploadButton = binding.uploadButton
             uploadButton.visibility = View.INVISIBLE
+
         }
         return root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+
     private fun checkPermission(): Boolean {
         val recordPermission = Manifest.permission.RECORD_AUDIO
         val storagePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -137,29 +142,79 @@ class DashboardFragment : Fragment() {
 
     private fun startRecording() {
         val outputFile = "${requireContext().externalCacheDir?.absolutePath}/recording3.m4a"
-        mediaRecorder = MediaRecorder()
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-        mediaRecorder.setOutputFile(outputFile)
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        mediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mediaRecorder!!.setOutputFile(outputFile)
+        mediaRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        val lineChart: LineChart? = binding.chartvoice
+        val dataSet = LineDataSet(null, "音量波形")?.apply {
+            setDrawCircles(false)
+            color = Color.RED
+            lineWidth = 2f
+        }
+
+        val lineData = LineData(dataSet)
+        lineChart?.data = lineData
+        val updateInterval:Long = 100
+        val handler = Handler(Looper.getMainLooper())
+        updateRunnable = Runnable {
+            val volume = mediaRecorder!!.maxAmplitude.toFloat()
+            updateVolumeChart(volume)
+            handler.postDelayed(updateRunnable!!, updateInterval)
+        }
+
+        handler.postDelayed(updateRunnable!!, updateInterval)
 
         val uploadButton = binding.uploadButton
         uploadButton.visibility = View.INVISIBLE
         try {
-            mediaRecorder.prepare()
-            mediaRecorder.start()
+            mediaRecorder!!.prepare()
+            mediaRecorder!!.start()
             isRecording = true
         } catch (e: IOException) {
             // Handle exception
         }
     }
-
+    private fun updateVolumeChart(volume: Float) {
+        val lineChart = binding.chartvoice
+        val data = lineChart.data
+        val dataSet = data.getDataSetByIndex(0) as LineDataSet
+        val entry = Entry(dataSet.entryCount.toFloat(), volume)
+        dataSet.addEntry(entry)
+        data.notifyDataChanged()
+        lineChart.notifyDataSetChanged()
+        lineChart.setVisibleXRangeMaximum(100f)
+        lineChart.moveViewToX(dataSet.entryCount.toFloat())
+    }
     private fun stopRecording() {
-        mediaRecorder.stop()
-        mediaRecorder.release()
+        requireActivity().runOnUiThread {
+            val handler = Handler(Looper.getMainLooper())
+            updateRunnable?.let {
+                handler.removeCallbacks(it)
+            }
+            val lineChart = binding.chartvoice
+            val data = lineChart.data
+            data.clearValues()
+
+            val uploadButton = binding.uploadButton
+            uploadButton.visibility = View.VISIBLE
+        }
+
+        if (mediaRecorder != null && !isMediaRecorderReleased) {
+            mediaRecorder?.stop()
+            mediaRecorder?.release()
+            isMediaRecorderReleased = true
+        }
         isRecording = false
-        val uploadButton = binding.uploadButton
-        uploadButton.visibility = View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        if (mediaRecorder != null && !isMediaRecorderReleased) {
+            mediaRecorder?.release()
+            isMediaRecorderReleased = true
+        }
     }
 
     fun copyAndRenameWavFile(sourceFilePath: String, destinationFilePath: String) {
@@ -333,11 +388,12 @@ class DashboardFragment : Fragment() {
                         val newFileName = "$word.m4a"
                         val newJsonName = "$word.json"
                         val destinationFilePath = "$folderPath/$newFileName" // 新文件的完整路径
-                        val destinationFilePathJson = "$folderPath/$newJsonName" // 新文件的完整路径
+                        // 新文件的完整路径
                         val sourceFilePath = "${requireContext().externalCacheDir?.absolutePath}/recording3.m4a"
-                        val sourceFilePathJson = "${requireContext().externalCacheDir?.absolutePath}/cache.json"
-                        copyAndRenameWavFile(sourceFilePathJson, destinationFilePathJson)
                         copyAndRenameWavFile(sourceFilePath, destinationFilePath)
+                        val sourceFilePathJson = "${requireContext().externalCacheDir?.absolutePath}/cache.json"
+                        val destinationFilePathJson = "$folderPath/$newJsonName"
+                        copyAndRenameWavFile(sourceFilePathJson, destinationFilePathJson)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
