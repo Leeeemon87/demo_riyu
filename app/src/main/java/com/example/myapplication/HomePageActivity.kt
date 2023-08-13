@@ -25,6 +25,7 @@ import java.io.IOException
 import android.provider.Settings
 import android.widget.Toast
 import org.json.JSONObject
+import android.content.Context
 class HomePageActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,11 @@ class HomePageActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    fun navigateToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
     private fun sendRequestWithDeviceId() {
         val deviceID = Settings.Secure.getString(
@@ -68,19 +74,15 @@ class HomePageActivity : ComponentActivity() {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onResponse(call: Call, response: Response) {
-                // 处理响应
+
             }
 
             override fun onFailure(call: Call, e: IOException) {
-                // 处理失败
+
             }
         })
     // 跳转至 MainActivity
-    fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
+
 
 }
 
@@ -111,13 +113,75 @@ fun LoginScreen() {
             value = username,
             onValueChange = { newUsername -> username = newUsername },
         )
-
         // 登录按钮
         Button(
             onClick = {
 
-                val intent = Intent(context, MainActivity::class.java)
-                context.startActivity(intent)
+                val requestBody = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("deviceId", Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID))
+                    .addFormDataPart("timestamp", System.currentTimeMillis().toString())
+                    .addFormDataPart("username", resources.getString(R.string.zhuxu)) // 使用资源文件中的字符串
+                    .build()
+// 创建 OkHttp 客户端
+                val client = OkHttpClient()
+
+// 构建 POST 请求
+                val url = "http://49.233.22.132:8080/demo/user/add" // 替换为实际的 API URL
+                val request = Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .build()
+
+
+// 发送请求
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onResponse(call: Call, response: Response) {
+
+
+                        val responseData = response.body()?.string()
+                        if (responseData != null) {
+                            // 使用 JSON 解析库解析服务器返回的 JSON 数据
+                            try {
+                                val jsonObject = JSONObject(responseData)
+                                val code = jsonObject.getString("code")
+                                val info = jsonObject.getString("info")
+                                val token = jsonObject.getString("token")
+                                val homeActivity1 = this@HomePageActivity
+
+                                val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                                val editor = sharedPreferences.edit()
+                                editor.putString("token", token) // token 是您获取到的 token
+                                editor.apply()
+                                if(code=="0") {
+                                    val intent = Intent(context, MainActivity::class.java)
+                                    context.startActivity(intent)
+                                    runOnUiThread {
+                                        Toast.makeText(homeActivity1, "登陆成功！您的token是"+token, Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                                else
+                                {
+                                    runOnUiThread {
+                                        Toast.makeText(homeActivity1, "登陆失败！您的密码不对", Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                            }
+                            catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                            }
+                    }
+
+                    override fun onFailure(call: Call, e: IOException) {
+                        // 处理请求失败
+                        val homeActivity2 = this@HomePageActivity
+                        runOnUiThread {
+                            Toast.makeText(homeActivity2, "登陆失败", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                    })
+
             },
             modifier = Modifier
                 .fillMaxWidth()
