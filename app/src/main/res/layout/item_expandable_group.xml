@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Group Title -->
+    <TextView
+        android:id="@+id/groupTitleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Group Title"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+
+        android:background="@drawable/item_border"
+        android:textSize="18sp"
+        android:textColor="@color/primaryColor"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true"
+        />
+    <!--        android:background="?android:attr/selectableItemBackground"-->
+    <!-- Divider Line -->
+    <!-- Subitems (hidden initially) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/subitemRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" />
+
+</LinearLayout>

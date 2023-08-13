@@ -45,6 +45,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TaskStage1Activity"
+            android:exported="true"
+            android:label="TaskStage1Activity">
+        </activity>
+        <activity
+            android:name=".TaskStage2Activity"
+            android:exported="true"
+            android:label="TaskStage2Activity">
+        </activity>
+
     </application>
 
 </manifest>
