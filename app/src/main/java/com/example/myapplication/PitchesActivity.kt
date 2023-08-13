@@ -33,12 +33,15 @@ class PitchesActivity : AppCompatActivity() {
 //        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back) // 设置返回图标
         supportActionBar?.setHomeButtonEnabled(true)
 
-        val filePath = intent.getStringExtra("filePath")
-        if (filePath.isNullOrEmpty()) {
-            onBackPressed()
-        }
-        val jsonOri = loadJSONFromFile(filePath.toString())
-        Log.v("jsonPath",filePath.toString())
+//        val filePath = intent.getStringExtra("filePath")
+//        if (filePath.isNullOrEmpty()) {
+//            onBackPressed()
+//        }
+//        val jsonOri = loadJSONFromFile(filePath.toString())
+        val jsonOri=loadJSONFromAsset("result.json")
+
+        //Log.v("jsonPath",filePath.toString())
+
         val jsonObject = JSONObject(jsonOri)
         val jsondata = jsonObject.getJSONObject("data")
 
@@ -62,7 +65,7 @@ class PitchesActivity : AppCompatActivity() {
         var countAll:Int=0
         var j:Int=0
 
-        while (countAll<listAllTime.length()-100){
+        while (countAll<listAllTime.length()){
             while (j<listStarts.length()){
                 val left = listStarts.getDouble(j).toFloat()
                 val right = listEnds.getDouble(j).toFloat()
@@ -185,6 +188,14 @@ class PitchesActivity : AppCompatActivity() {
 
     }
 
+    private fun loadJSONFromAsset(fileName: String): String {
+        val inputStream: InputStream = assets.open(fileName)
+        val size: Int = inputStream.available()
+        val buffer = ByteArray(size)
+        inputStream.read(buffer)
+        inputStream.close()
+        return String(buffer, Charsets.UTF_8)
+    }
     private fun setupVerticalLinesWithLabels(xAxis: XAxis, xValues: List<Float>,xStarts: List<String>) {
         for (i in xValues.indices) {
             val limitLine = LimitLine(xValues[i])
