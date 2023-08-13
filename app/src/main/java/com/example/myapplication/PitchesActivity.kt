@@ -2,7 +2,6 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.databinding.ActivityPitchesBinding
@@ -14,7 +13,6 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
 
@@ -78,27 +76,41 @@ class PitchesActivity : AppCompatActivity() {
 
         waveformChart.invalidate() // Refresh the chart
 
-        // 创建 BarChart 实例
+        // 简化版假名
         val barChart: BarChart = binding.barChart
 
         // 创建柱状图数据集
         val barEntries = mutableListOf<BarEntry>()
 
-// 添加柱状图数据
-        for (i in 0 until listAllTime.length()) {
-            val x = listAllTime.getDouble(i).toFloat() // 提取 x 坐标数据
-            val y = listAllValue.getDouble(i).toFloat() // 提取 y 坐标数据
-            barEntries.add(BarEntry(x, y))
-        }
+        // 添加柱状图数据
+//        for (i in 0 until listStarts.length()) {
+//            val x = listStarts.getDouble(i).toFloat() // 提取 x 坐标数据
+//            val y = listMean.getDouble(i).toFloat() // 提取 y 坐标数据
+//            barEntries.add(BarEntry(x, y))
+//            val x2 = listEnds.getDouble(i).toFloat() // 提取 x 坐标数据
+//            val y2 = listMean.getDouble(i).toFloat() // 提取 y 坐标数据
+//            barEntries.add(BarEntry(x2, y2))
+//        }
 
-// 创建柱状图数据集
+        barEntries.add(BarEntry(0f, 30f))
+        barEntries.add(BarEntry(1f, 80f))
+        barEntries.add(BarEntry(2f, 60f))
+        barEntries.add(BarEntry(3f, 50f))
+        // gap of 2f
+        // gap of 2f
+        barEntries.add(BarEntry(5f, 70f))
+        barEntries.add(BarEntry(6f, 60f))
+        // 创建柱状图数据集
         val barDataSet = BarDataSet(barEntries, "BarDataSet")
+
+        // 设置柱状之间的间隔
+        barDataSet.barBorderWidth =0.4f
         val barData = BarData(barDataSet)
 
-// 设置柱状图数据
+        // 设置柱状图数据
         barChart.data = barData
 
-// 设置柱状图外观和行为
+        // 设置柱状图外观和行为
         barChart.description.isEnabled = true
         barChart.xAxis.isEnabled = true
         barChart.axisLeft.isEnabled = true
@@ -107,13 +119,11 @@ class PitchesActivity : AppCompatActivity() {
         barChart.invalidate() // 刷新柱状图
 
 
-
-
+        // 按钮
         val refbutton=binding.resButton
         refbutton.setOnClickListener()
         {
-            waveformChart.data = lineData
-            waveformChart.invalidate()
+
         }
 
 
