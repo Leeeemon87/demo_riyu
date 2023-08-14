@@ -6,20 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".ui.dashboard.DashboardFragment">
 
-    <!-- 设置按钮的背景形状 -->
 
-    <!--    <com.mikephil.charting.charts.LineChart-->
-    <!--        android:id="@+id/waveformChart"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="300dp" />-->
 
+
+
+
+    <ImageView
+        android:id="@+id/gifImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:src="@drawable/giphy"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/recordButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        />
 
     <ImageButton
         android:id="@+id/recordButton"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="88dp"
+        android:layout_marginBottom="116dp"
         android:background="@drawable/btn_circle_border"
         android:contentDescription="@string/record_stop_button"
         android:src="@drawable/ic_record"
@@ -29,6 +42,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/recordButtonCheck" />
 
+
     <Button
         android:id="@+id/uploadButton"
         android:layout_width="149dp"
@@ -37,11 +51,9 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recordButton"
-        app:layout_constraintVertical_bias="0.5" />
-
+        app:layout_constraintVertical_bias="0.42" />
 
     <ImageButton
         android:id="@+id/recordButtonCancel"
@@ -53,10 +65,10 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.514"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/recordButton"
-        app:layout_constraintTop_toBottomOf="@+id/text_dashboard"
-        app:layout_constraintVertical_bias="0.768" />
+        app:layout_constraintTop_toBottomOf="@+id/gifImageView"
+        app:layout_constraintVertical_bias="0.214" />
 
     <ImageButton
         android:id="@+id/recordButtonCheck"
@@ -66,12 +78,13 @@
         android:background="@drawable/btn_circle_border"
         android:src="@drawable/ic_check_circle"
         android:visibility="invisible"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/recordButton"
-        app:layout_constraintHorizontal_bias="0.443"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_dashboard"
-        app:layout_constraintVertical_bias="0.768" />
+        app:layout_constraintTop_toBottomOf="@+id/gifImageView"
+        app:layout_constraintVertical_bias="0.214" />
 
     <TextView
         android:id="@+id/text_dashboard"
@@ -86,6 +99,6 @@
         app:layout_constraintHorizontal_bias="0.555"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.776" />
+        app:layout_constraintVertical_bias="0.843" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
