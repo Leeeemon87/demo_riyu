@@ -19,6 +19,7 @@ import android.content.Context
 import android.Manifest
 import android.content.pm.PackageManager
 import android.provider.Settings
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -58,7 +59,8 @@ class DashboardFragment : Fragment() {
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
+        val gifImageView: ImageView = binding.gifImageView
+        gifImageView.setImageResource(R.drawable.giphy)
         val textView: TextView = binding.textDashboard
         dashboardViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
@@ -66,17 +68,18 @@ class DashboardFragment : Fragment() {
 
         val recordButton:ImageButton = binding.recordButton
         val uploadButton = binding.uploadButton
-
+        val waveImage =binding.gifImageView
         recordButton.setOnClickListener {
             if (isRecording) GlobalScope.launch(Dispatchers.Main){
                 recordButton.setImageResource(R.drawable.ic_record)
                 delay(400)
                 stopRecording()
-
+                waveImage.visibility=View.INVISIBLE
             } else {
                 if (checkPermission()) {
                     startRecording()
                     recordButton.setImageResource(R.drawable.ic_stop)
+                    waveImage.visibility=View.VISIBLE
                 } else {
                     requestPermission()
                 }
@@ -297,10 +300,27 @@ class DashboardFragment : Fragment() {
                                                 requireActivity().runOnUiThread {
                                                     Toast.makeText(requireContext(), "计算结果成功！", Toast.LENGTH_LONG).show()
                                                 }
-                                                val newJsonName = "cache.json"
-                                                val cacheFilePath = "${requireContext().externalCacheDir?.absolutePath}/$newJsonName"
+                                                val JsonName = "cache.json"
+                                                val cacheFilePath = "${requireContext().externalCacheDir?.absolutePath}/$JsonName"
                                                 val cacheFile = File(cacheFilePath)
                                                 cacheFile.writeText(responseData)
+                                                val timestamp = System.currentTimeMillis()
+                                                val folderName = "$timestamp" // 新文件夹的名称就是时间戳
+                                                val folderPath = "${requireContext().externalCacheDir?.absolutePath}/$folderName"
+
+                                                val folder = File(folderPath)
+                                                if (!folder.exists()) {
+                                                    folder.mkdirs() // 创建新文件夹
+                                                }
+
+                                                val newFileName = "$word.m4a"
+                                                val newJsonName = "$word.json"
+                                                val destinationFilePath = "$folderPath/$newFileName" // 新文件的完整路径
+                                                val destinationFilePathJson = "$folderPath/$newJsonName" // 新文件的完整路径
+                                                val sourceFilePath = "${requireContext().externalCacheDir?.absolutePath}/recording3.m4a"
+                                                val sourceFilePathJson = "${requireContext().externalCacheDir?.absolutePath}/cache.json"
+                                                copyAndRenameWavFile(sourceFilePathJson, destinationFilePathJson)
+                                                copyAndRenameWavFile(sourceFilePath, destinationFilePath)
                                             }
                                             else{
                                                 requireActivity().runOnUiThread {
@@ -321,23 +341,7 @@ class DashboardFragment : Fragment() {
                             })
                         }
 
-                        val timestamp = System.currentTimeMillis()
-                        val folderName = "$timestamp" // 新文件夹的名称就是时间戳
-                        val folderPath = "${requireContext().externalCacheDir?.absolutePath}/$folderName"
 
-                        val folder = File(folderPath)
-                        if (!folder.exists()) {
-                            folder.mkdirs() // 创建新文件夹
-                        }
-
-                        val newFileName = "$word.m4a"
-                        val newJsonName = "$word.json"
-                        val destinationFilePath = "$folderPath/$newFileName" // 新文件的完整路径
-                        val destinationFilePathJson = "$folderPath/$newJsonName" // 新文件的完整路径
-                        val sourceFilePath = "${requireContext().externalCacheDir?.absolutePath}/recording3.m4a"
-                        val sourceFilePathJson = "${requireContext().externalCacheDir?.absolutePath}/cache.json"
-                        copyAndRenameWavFile(sourceFilePathJson, destinationFilePathJson)
-                        copyAndRenameWavFile(sourceFilePath, destinationFilePath)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
