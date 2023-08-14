@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentNotificationsBinding
 import com.example.myapplication.PitchesActivity
+import com.example.myapplication.HistoryActivity
 
 class NotificationsFragment : Fragment() {
 
@@ -32,16 +33,19 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
 
-        val pitchButton =binding.testButton
+//        val pitchButton =binding.testButton
+//        // 在 NotificationFragment.kt 中的按钮点击事件中
+//        pitchButton.setOnClickListener {
+//            val intent = Intent(requireContext(), PitchesActivity::class.java)
+//            intent.putExtra("key", "value") // 添加要传递的参数
+//            startActivity(intent)
+//        }
 
+        val hisButton =binding.historyButton
         // 在 NotificationFragment.kt 中的按钮点击事件中
-        pitchButton.setOnClickListener {
-            val intent = Intent(requireContext(), PitchesActivity::class.java)
+        hisButton.setOnClickListener {
+            val intent = Intent(requireContext(), HistoryActivity::class.java)
             intent.putExtra("key", "value") // 添加要传递的参数
             startActivity(intent)
         }

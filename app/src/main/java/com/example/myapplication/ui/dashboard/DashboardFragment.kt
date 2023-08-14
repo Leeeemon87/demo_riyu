@@ -297,10 +297,27 @@ class DashboardFragment : Fragment() {
                                                 requireActivity().runOnUiThread {
                                                     Toast.makeText(requireContext(), "计算结果成功！", Toast.LENGTH_LONG).show()
                                                 }
-                                                val newJsonName = "cache.json"
-                                                val cacheFilePath = "${requireContext().externalCacheDir?.absolutePath}/$newJsonName"
+                                                val JsonName = "cache.json"
+                                                val cacheFilePath = "${requireContext().externalCacheDir?.absolutePath}/$JsonName"
                                                 val cacheFile = File(cacheFilePath)
                                                 cacheFile.writeText(responseData)
+                                                val timestamp = System.currentTimeMillis()
+                                                val folderName = "$timestamp" // 新文件夹的名称就是时间戳
+                                                val folderPath = "${requireContext().externalCacheDir?.absolutePath}/$folderName"
+
+                                                val folder = File(folderPath)
+                                                if (!folder.exists()) {
+                                                    folder.mkdirs() // 创建新文件夹
+                                                }
+
+                                                val newFileName = "$word.m4a"
+                                                val newJsonName = "$word.json"
+                                                val destinationFilePath = "$folderPath/$newFileName" // 新文件的完整路径
+                                                val sourceFilePath = "${requireContext().externalCacheDir?.absolutePath}/recording3.m4a"
+                                                copyAndRenameWavFile(sourceFilePath, destinationFilePath)
+                                                val sourceFilePathJson = "${requireContext().externalCacheDir?.absolutePath}/cache.json"
+                                                val destinationFilePathJson = "$folderPath/$newJsonName" // 新文件的完整路径
+                                                copyAndRenameWavFile(sourceFilePathJson, destinationFilePathJson)
                                             }
                                             else{
                                                 requireActivity().runOnUiThread {
@@ -321,23 +338,7 @@ class DashboardFragment : Fragment() {
                             })
                         }
 
-                        val timestamp = System.currentTimeMillis()
-                        val folderName = "$timestamp" // 新文件夹的名称就是时间戳
-                        val folderPath = "${requireContext().externalCacheDir?.absolutePath}/$folderName"
 
-                        val folder = File(folderPath)
-                        if (!folder.exists()) {
-                            folder.mkdirs() // 创建新文件夹
-                        }
-
-                        val newFileName = "$word.m4a"
-                        val newJsonName = "$word.json"
-                        val destinationFilePath = "$folderPath/$newFileName" // 新文件的完整路径
-                        val sourceFilePath = "${requireContext().externalCacheDir?.absolutePath}/recording3.m4a"
-                        copyAndRenameWavFile(sourceFilePath, destinationFilePath)
-                        val sourceFilePathJson = "${requireContext().externalCacheDir?.absolutePath}/cache.json"
-                        val destinationFilePathJson = "$folderPath/$newJsonName" // 新文件的完整路径
-                        copyAndRenameWavFile(sourceFilePathJson, destinationFilePathJson)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
