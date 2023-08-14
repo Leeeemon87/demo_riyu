@@ -316,11 +316,13 @@ class DashboardFragment : Fragment() {
                                                 val newFileName = "$word.m4a"
                                                 val newJsonName = "$word.json"
                                                 val destinationFilePath = "$folderPath/$newFileName" // 新文件的完整路径
+
                                                 val destinationFilePathJson = "$folderPath/$newJsonName" // 新文件的完整路径
                                                 val sourceFilePath = "${requireContext().externalCacheDir?.absolutePath}/recording3.m4a"
                                                 val sourceFilePathJson = "${requireContext().externalCacheDir?.absolutePath}/cache.json"
                                                 copyAndRenameWavFile(sourceFilePathJson, destinationFilePathJson)
                                                 copyAndRenameWavFile(sourceFilePath, destinationFilePath)
+
                                             }
                                             else{
                                                 requireActivity().runOnUiThread {
