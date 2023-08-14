@@ -114,7 +114,7 @@ class PitchesActivity : AppCompatActivity() {
         waveformChart.axisRight.axisMaximum=300F
 
         waveformChart.xAxis.axisMaximum=listEnds.getDouble(listEnds.length()-1).toFloat()+0.1F
-        waveformChart.xAxis.axisMinimum=listEnds.getDouble(0).toFloat()-0.1F
+        waveformChart.xAxis.axisMinimum=listStarts.getDouble(0).toFloat()-0.1F
 
         waveformChart.invalidate() // Refresh the chart
 
@@ -201,6 +201,7 @@ class PitchesActivity : AppCompatActivity() {
                 mediaPlayer.prepare()
                 mediaPlayer.setOnCompletionListener {
                     isPlaying = false
+                    mediaPlayer.reset()
                     refButton.text = "播放"
                 }
                 mediaPlayer.start()
@@ -208,7 +209,6 @@ class PitchesActivity : AppCompatActivity() {
                 refButton.text = "暂停"
             } else {
                 mediaPlayer.stop()
-                mediaPlayer.reset()
                 isPlaying = false
                 refButton.text = "播放"
             }

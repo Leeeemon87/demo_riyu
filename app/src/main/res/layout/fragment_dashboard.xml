@@ -89,16 +89,23 @@
     <TextView
         android:id="@+id/text_dashboard"
         android:layout_width="420dp"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:text="语音识别区"
         android:textAlignment="center"
-        android:textSize="30sp"
+        android:textSize="20dp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/recordButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.555"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.843" />
+        app:layout_constraintVertical_bias="0.843"/>
+<!--        android:ellipsize="marquee"-->
+<!--        android:singleLine="true"-->
+<!--        android:focusable="true"-->
+<!--        android:focusableInTouchMode="true"-->
+<!--        android:marqueeRepeatLimit="marquee_forever"-->
+<!--        android:scrollHorizontally="true"-->
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

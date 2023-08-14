@@ -239,9 +239,9 @@ class DashboardFragment : Fragment() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-//                requireActivity().runOnUiThread {
-//                    Toast.makeText(requireContext(), "upload succeed", Toast.LENGTH_LONG).show()
-//                }
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(), "upload succeed", Toast.LENGTH_LONG).show()
+                }
                 val responseData = response.body()?.string() // 获取响应数据
                 if (responseData != null) {
                     // 使用 JSON 解析库解析服务器返回的 JSON 数据
@@ -251,11 +251,11 @@ class DashboardFragment : Fragment() {
                         val info = jsonObject.getString("info")
                         val word = jsonObject.getString("data")
 
+
                         requireActivity().runOnUiThread {
                             Toast.makeText(requireContext(), "Status: $code, Message: $word", Toast.LENGTH_LONG).show()
                         }
-                        val Textviewshow=binding.textDashboard
-                        Textviewshow.text=word
+                        binding?.textDashboard?.text = word
 
                         cancelButton.setOnClickListener{
                             cancelButton.visibility=View.INVISIBLE
