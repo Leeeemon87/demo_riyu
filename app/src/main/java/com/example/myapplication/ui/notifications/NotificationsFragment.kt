@@ -34,13 +34,13 @@ class NotificationsFragment : Fragment() {
         val root: View = binding.root
 
 
-        val pitchButton =binding.testButton
-        // 在 NotificationFragment.kt 中的按钮点击事件中
-        pitchButton.setOnClickListener {
-            val intent = Intent(requireContext(), PitchesActivity::class.java)
-            intent.putExtra("key", "value") // 添加要传递的参数
-            startActivity(intent)
-        }
+//        val pitchButton =binding.testButton
+//        // 在 NotificationFragment.kt 中的按钮点击事件中
+//        pitchButton.setOnClickListener {
+//            val intent = Intent(requireContext(), PitchesActivity::class.java)
+//            intent.putExtra("key", "value") // 添加要传递的参数
+//            startActivity(intent)
+//        }
 
         val hisButton =binding.historyButton
         // 在 NotificationFragment.kt 中的按钮点击事件中
