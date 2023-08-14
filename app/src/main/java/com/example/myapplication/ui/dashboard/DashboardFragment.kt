@@ -254,8 +254,7 @@ class DashboardFragment : Fragment() {
                         requireActivity().runOnUiThread {
                             Toast.makeText(requireContext(), "Status: $code, Message: $word", Toast.LENGTH_LONG).show()
                         }
-                        val Textviewshow=binding.textDashboard
-                        Textviewshow.text=word
+//                        3
 
                         cancelButton.setOnClickListener{
                             cancelButton.visibility=View.INVISIBLE
