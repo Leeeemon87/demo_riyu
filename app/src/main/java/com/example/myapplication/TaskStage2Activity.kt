@@ -14,6 +14,8 @@ import com.example.myapplication.ui.home.GroupItem
 import com.example.myapplication.ui.home.Subitem
 import com.example.myapplication.ui.home.WordAdapter
 import com.example.myapplication.ui.home.WordItem
+import org.json.JSONObject
+import java.io.InputStream
 
 class TaskStage2Activity : AppCompatActivity() {
 
@@ -21,6 +23,16 @@ class TaskStage2Activity : AppCompatActivity() {
     private lateinit var wordsRecyclerView: RecyclerView
     private lateinit var wordAdapter: WordAdapter
     private lateinit var wordItemList: MutableList<WordItem>
+
+    private fun loadJSONFromAsset(fileName: String): String {
+        val inputStream: InputStream = assets.open(fileName)
+        val size: Int = inputStream.available()
+        val buffer = ByteArray(size)
+        inputStream.read(buffer)
+        inputStream.close()
+        return String(buffer, Charsets.UTF_8)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,6 +61,12 @@ class TaskStage2Activity : AppCompatActivity() {
 
         wordItemList.add(WordItem("死にたい", "3", "しにたい"))
         // 添加更多单词
+
+        val jsonOri=loadJSONFromAsset("book.json")
+        val jsonObject = JSONObject(jsonOri)
+
+
+
 
         wordAdapter = WordAdapter(wordItemList)
         wordsRecyclerView.adapter = wordAdapter
