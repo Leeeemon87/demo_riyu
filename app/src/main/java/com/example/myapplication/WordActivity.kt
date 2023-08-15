@@ -1,7 +1,11 @@
 package com.example.myapplication
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,8 +22,11 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import java.io.File
 import com.example.myapplication.databinding.ActivityWordBinding
 import com.example.myapplication.ui.home.KanaItem
@@ -28,22 +35,41 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import org.json.JSONObject
+import java.io.IOException
 import java.io.InputStream
+import java.util.concurrent.TimeUnit
 
 
 class WordActivity : AppCompatActivity() {
+    private val recordPermissionCode = 101
+    private lateinit var mediaRecorder: MediaRecorder
+    private var isRecording = false
     private lateinit var binding: ActivityWordBinding
     private lateinit var seekBar: SeekBar
     private lateinit var startButton: Button
+    private lateinit var testButton: Button
     private lateinit var verticalLine: View
 
     private val handler = Handler(Looper.getMainLooper())
-    private val totalDurationMillis = 1000L // 总时间，单位：毫秒
+    private var totalDurationMillis = 1000L // 总时间，单位：毫秒
     private val totalSteps = 100
     private var currentStep = 0
     private var speed = 1.0
+    private val paizi=300L
     private var isMoving = false
+
+    private var accentArray: List<Int> = listOf()
+    private var answerArray: List<Int> = listOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWordBinding.inflate(layoutInflater)
@@ -69,6 +95,8 @@ class WordActivity : AppCompatActivity() {
 
             // 创建 KanaItem 实例
             val kanaItem = KanaItem(smallKanaList,honmei, furikana, accent)
+
+            totalDurationMillis=kanaItem.n.toLong()*paizi
 
             val linearLayout: LinearLayout = binding.linear
 
@@ -152,11 +180,28 @@ class WordActivity : AppCompatActivity() {
 
         startButton.setOnClickListener {
             if (!isMoving) {
+                if (checkPermission()) {
+                    startRecording()
+
+                    startButton.isEnabled = false
+                    isMoving = true
+                    currentStep = 0
+                    seekBar.progress = currentStep
+                    moveSeekBar()
+                } else {
+                    requestPermission()
+                }
+            }
+        }
+
+        testButton.setOnClickListener {
+            if (!isMoving) {
                 isMoving = true
                 currentStep = 0
                 seekBar.progress = currentStep
                 moveSeekBar()
-                startButton.isEnabled = false
+                testButton.isEnabled = false
+                startButton.isEnabled=false
             }
         }
 
@@ -176,7 +221,6 @@ class WordActivity : AppCompatActivity() {
                     2 -> speed = 3.0
                 }
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
@@ -217,6 +261,8 @@ class WordActivity : AppCompatActivity() {
             handler.postDelayed({ moveSeekBar() }, actualStepDurationMillis)
         } else {
             isMoving = false
+            stopRecording()
+            uploadRecording()
             startButton.isEnabled = true
             val layoutParams = verticalLine.layoutParams as ConstraintLayout.LayoutParams
             layoutParams.marginStart = 0
@@ -244,4 +290,115 @@ class WordActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun checkPermission(): Boolean {
+        val recordPermission = Manifest.permission.RECORD_AUDIO
+        val storagePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        return ContextCompat.checkSelfPermission(
+            this,
+            recordPermission
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    this,
+                    storagePermission
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this@WordActivity,
+            arrayOf(
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ),
+            recordPermissionCode
+        )
+    }
+
+    private fun startRecording() {
+        val outputFile = "${this.externalCacheDir?.absolutePath}/word.m4a"
+        mediaRecorder = MediaRecorder()
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mediaRecorder.setOutputFile(outputFile)
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
+        try {
+            mediaRecorder.prepare()
+            mediaRecorder.start()
+            isRecording = true
+        } catch (e: IOException) {
+            // Handle exception
+        }
+    }
+
+    private fun stopRecording() {
+        mediaRecorder.stop()
+        mediaRecorder.release()
+        isRecording = false
+    }
+
+    private fun uploadRecording() {
+        val uploadUrl = "http://49.233.22.132:8080/demo/word"
+        val outputFile = "${this.externalCacheDir?.absolutePath}/word.m4a"
+
+        val file = File(outputFile)
+
+        val client = OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .build()
+        // 从 SharedPreferences 获取 token
+        val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("token", null)
+
+        val requestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("token", token) // 添加 token 参数
+            .addFormDataPart(
+                "file",
+                "word.m4a",
+                RequestBody.create(MediaType.parse("audio/m4a"), file)
+            )
+            .addFormDataPart("accent", token) // 添加 array 参数
+            .build()
+
+        val request: Request = Request.Builder()
+            .url(uploadUrl)
+            .post(requestBody)
+            .build()
+
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.v("con","fail")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+//                requireActivity().runOnUiThread {
+//                    Toast.makeText(requireContext(), "upload succeed", Toast.LENGTH_LONG).show()
+//                }
+                val responseData = response.body()?.string() // 获取响应数据
+                if (responseData != null) {
+                    // 使用 JSON 解析库解析服务器返回的 JSON 数据
+                    try {
+                        val jsonObject = JSONObject(responseData)
+                        val code = jsonObject.getString("code")
+                        val info = jsonObject.getString("info")
+                        val word = jsonObject.getString("data")
+
+                        this@WordActivity.runOnUiThread {
+                            Log.v("con","success")
+//                            Toast.makeText(this, "Status: $code, Message: $word", Toast.LENGTH_LONG).show()
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+            }
+        })
+    }
+
 }
