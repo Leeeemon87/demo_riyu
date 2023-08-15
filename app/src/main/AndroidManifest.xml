@@ -20,6 +20,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".WordActivity"
+            android:exported="false"
+            android:label="@string/title_activity_word"
+            android:theme="@style/Theme.MyApplication" />
+        <activity
             android:name=".HistoryActivity"
             android:exported="false"
             android:label="@string/title_activity_history"
@@ -55,14 +60,11 @@
         <activity
             android:name=".TaskStage1Activity"
             android:exported="true"
-            android:label="TaskStage1Activity">
-        </activity>
+            android:label="TaskStage1Activity"></activity>
         <activity
             android:name=".TaskStage2Activity"
             android:exported="true"
-            android:label="TaskStage2Activity">
-        </activity>
-
+            android:label="TaskStage2Activity"></activity>
     </application>
 
 </manifest>

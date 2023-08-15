@@ -174,21 +174,21 @@ class PitchesActivity : AppCompatActivity() {
         meanChart.axisLeft.setDrawGridLines(chartOn) // 不绘制左侧 Y 轴上的网格线
         meanChart.axisRight.setDrawGridLines(chartOn) // 不绘制右侧 Y 轴上的网格线
 
-        // 设置垂直虚线
-        val xValues = mutableListOf<Float>()
-        for (i in 0 until listStarts.length()) {
-            xValues.add(listStarts.getDouble(i).toFloat())
-            xValues.add(listEnds.getDouble(i).toFloat())
-        }
-        setupVerticalLines(meanChart.xAxis, xValues)
-
-        val xLabels = mutableListOf<String>()
-        val xStarts = mutableListOf<Float>()
-        for (i in 0 until listStarts.length()) {
-            xStarts.add(listStarts.getDouble(i).toFloat())
-            xLabels.add(listHira.getString(i))
-        }
-        setupVerticalLinesWithLabels(meanChart.xAxis, xStarts,xLabels)
+//        // 设置垂直虚线
+//        val xValues = mutableListOf<Float>()
+//        for (i in 0 until listStarts.length()) {
+//            xValues.add(listStarts.getDouble(i).toFloat())
+//            xValues.add(listEnds.getDouble(i).toFloat())
+//        }
+//        setupVerticalLines(meanChart.xAxis, xValues)
+//
+//        val xLabels = mutableListOf<String>()
+//        val xStarts = mutableListOf<Float>()
+//        for (i in 0 until listStarts.length()) {
+//            xStarts.add(listStarts.getDouble(i).toFloat())
+//            xLabels.add(listHira.getString(i))
+//        }
+//        setupVerticalLinesWithLabels(meanChart.xAxis, xStarts,xLabels)
         // 刷新图表
         meanChart.invalidate()
 
