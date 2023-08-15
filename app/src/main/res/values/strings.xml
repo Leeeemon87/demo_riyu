@@ -14,4 +14,10 @@
     <string name="history">history</string>
     <string name="title_activity_history">HistoryActivity</string>
     <string name="title_activity_word">WordActivity</string>
+    <string-array name="speed_options">
+        <item>慢</item>
+        <item>中</item>
+        <item>快</item>
+    </string-array>
+
 </resources>

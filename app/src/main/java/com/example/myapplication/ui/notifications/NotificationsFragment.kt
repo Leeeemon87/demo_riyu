@@ -39,9 +39,9 @@ class NotificationsFragment : Fragment() {
         // 在 NotificationFragment.kt 中的按钮点击事件中
         pitchButton.setOnClickListener {
             val intent = Intent(requireContext(), WordActivity::class.java)
-            intent.putExtra("honmei", "特許") // 添加要传递的参数
-            intent.putExtra("furikana", "とっきょ") // 添加要传递的参数
-            intent.putExtra("accent", "1") // 添加要传递的参数
+            intent.putExtra("honmei", "東京許可局") // 添加要传递的参数
+            intent.putExtra("furikana", "とうきょうきょかきょく") // 添加要传递的参数
+            intent.putExtra("accent", "5") // 添加要传递的参数
             startActivity(intent)
         }
 
