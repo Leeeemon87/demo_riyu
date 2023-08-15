@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentNotificationsBinding
 import com.example.myapplication.PitchesActivity
 import com.example.myapplication.HistoryActivity
+import com.example.myapplication.WordActivity
 
 class NotificationsFragment : Fragment() {
 
@@ -34,13 +35,15 @@ class NotificationsFragment : Fragment() {
         val root: View = binding.root
 
 
-//        val pitchButton =binding.testButton
-//        // 在 NotificationFragment.kt 中的按钮点击事件中
-//        pitchButton.setOnClickListener {
-//            val intent = Intent(requireContext(), PitchesActivity::class.java)
-//            intent.putExtra("key", "value") // 添加要传递的参数
-//            startActivity(intent)
-//        }
+        val pitchButton =binding.testButton
+        // 在 NotificationFragment.kt 中的按钮点击事件中
+        pitchButton.setOnClickListener {
+            val intent = Intent(requireContext(), WordActivity::class.java)
+            intent.putExtra("honmei", "特許") // 添加要传递的参数
+            intent.putExtra("furikana", "とっきょ") // 添加要传递的参数
+            intent.putExtra("accent", "1") // 添加要传递的参数
+            startActivity(intent)
+        }
 
         val hisButton =binding.historyButton
         // 在 NotificationFragment.kt 中的按钮点击事件中
