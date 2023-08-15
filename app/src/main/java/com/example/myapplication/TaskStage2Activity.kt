@@ -6,16 +6,21 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ActivityTaskStage1Binding
 import com.example.myapplication.databinding.ActivityTaskStage2Binding
 import com.example.myapplication.ui.home.ExpandableListAdapter
 import com.example.myapplication.ui.home.GroupItem
 import com.example.myapplication.ui.home.Subitem
+import com.example.myapplication.ui.home.WordAdapter
+import com.example.myapplication.ui.home.WordItem
 
 class TaskStage2Activity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTaskStage2Binding
-
+    private lateinit var wordsRecyclerView: RecyclerView
+    private lateinit var wordAdapter: WordAdapter
+    private lateinit var wordItemList: MutableList<WordItem>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,6 +38,23 @@ class TaskStage2Activity : AppCompatActivity() {
 
         val textView = findViewById<TextView>(R.id.textView)
         textView.text = "待开发"
+
+        setContentView(R.layout.activity_task_stage2)
+
+        wordsRecyclerView = findViewById(R.id.wordsRecyclerView)
+
+        wordItemList = mutableListOf()
+        // 添加示例数据
+        wordItemList.add(WordItem("今日は", "0", "こんにちは"))
+
+        wordItemList.add(WordItem("死にたい", "3", "しにたい"))
+        // 添加更多单词
+
+        wordAdapter = WordAdapter(wordItemList)
+        wordsRecyclerView.adapter = wordAdapter
+
+        val layoutManager = LinearLayoutManager(this)
+        wordsRecyclerView.layoutManager = layoutManager
 
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
