@@ -57,13 +57,34 @@ class TaskStage2Activity : AppCompatActivity() {
 
         wordItemList = mutableListOf()
         // 添加示例数据
-        wordItemList.add(WordItem("今日は", "0", "こんにちは"))
-
-        wordItemList.add(WordItem("死にたい", "3", "しにたい"))
+//        wordItemList.add(WordItem("今日は", "0", "こんにちは"))
+//
+//        wordItemList.add(WordItem("死にたい", "3", "しにたい"))
         // 添加更多单词
+
+        val book = intent.getStringExtra("book")
+        val lesson = intent.getStringExtra("lesson")
 
         val jsonOri=loadJSONFromAsset("book.json")
         val jsonObject = JSONObject(jsonOri)
+
+        val booksObject = jsonObject.getJSONObject("books")
+
+        val lessonsObject = booksObject.getJSONObject(book)
+
+        val wordArray = lessonsObject.getJSONArray(lesson)
+
+        for (j in 0 until wordArray.length()) {
+            val wordObject = wordArray.getJSONObject(j)
+            val kana = wordObject.getString("kana")
+            val word = wordObject.getString("word")
+            val tone = wordObject.getString("tone")
+            wordItemList.add(WordItem(word, tone, kana))
+        }
+
+
+
+
 
 
 

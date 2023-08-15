@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.WordActivity
 
 class WordAdapter(private val wordList: List<WordItem>) : RecyclerView.Adapter<WordAdapter.ViewHolder>() {
 
@@ -38,15 +39,15 @@ class WordAdapter(private val wordList: List<WordItem>) : RecyclerView.Adapter<W
 
             itemView.setOnClickListener {
                 // Handle item click here
-                Toast.makeText(itemView.context, "succeed in jumping", Toast.LENGTH_LONG).show()
+                Toast.makeText(itemView.context, "succeed in jumping", Toast.LENGTH_SHORT).show()
 
-                // You can also start WordDetailActivity here
-//                val intent = Intent(itemView.context, WordDetailActivity::class.java).apply {
-//                    putExtra("honmei", wordItem.word)
-//                    putExtra("accent", wordItem.tone)
-//                    putExtra("furikana", wordItem.kana)
-//                }
-//                itemView.context.startActivity(intent)
+//                 You can also start WordActivity here
+                val intent = Intent(itemView.context, WordActivity::class.java).apply {
+                    putExtra("honmei", wordItem.word)
+                    putExtra("accent", wordItem.tone)
+                    putExtra("furikana", wordItem.kana)
+                }
+                itemView.context.startActivity(intent)
             }
         }
     }

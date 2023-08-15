@@ -37,6 +37,8 @@ class SubitemAdapter(private val subitems: List<Subitem>) : RecyclerView.Adapter
             itemView.setOnClickListener {
                 // 处理子列表项点击事件，例如跳转到新的 Activity
                 val intent = Intent(itemView.context, TaskStage2Activity::class.java)
+                intent.putExtra("book", subitem.groupText)
+                intent.putExtra("lesson", subitem.text)
                 itemView.context.startActivity(intent)
             }
         }

@@ -56,11 +56,12 @@ class TaskStage1Activity : AppCompatActivity() {
         while (iterator.hasNext()) {
             val subitems = mutableListOf<Subitem>()
             val key = iterator.next() as String
-            val valueArray = booksObject.getJSONArray(key)
+            val jsonTemp = booksObject.getJSONObject(key)
 
-            val valuesList = mutableListOf<String>()
-            for (i in 0 until valueArray.length()) {
-                subitems.add(Subitem(valueArray.getString(i)))
+            val tempIter = jsonTemp.keys()
+            while (tempIter.hasNext()) {
+                val sub = tempIter.next() as String
+                subitems.add(Subitem(sub, key))
             }
 
             groupItems.add(GroupItem(key, subitems))
