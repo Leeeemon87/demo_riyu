@@ -125,6 +125,7 @@ class PitchesActivity : AppCompatActivity() {
         // 定义颜色数组，用于为每个线段分配不同的颜色
         val colors = arrayOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA,Color.CYAN)
 
+        val chartOn=false
         for (i in 0 until listHira.length()) {
             val hiraName = listHira.getString(i)
             val x1 = listStarts.getDouble(i).toFloat()
@@ -143,7 +144,7 @@ class PitchesActivity : AppCompatActivity() {
             val colorIndex = i % colors.size
             val lineColor = colors[colorIndex]
             lineDataSet.color = lineColor
-            lineDataSet.setDrawFilled(true)
+            lineDataSet.setDrawFilled(chartOn)
             lineDataSet.fillColor = lineColor
             lineDataSet.fillAlpha = 90
             // 设置数据点颜色
@@ -164,11 +165,14 @@ class PitchesActivity : AppCompatActivity() {
 
         // 设置图表外观和行为
         meanChart.description.isEnabled = false
-        meanChart.legend.isEnabled = true
-        meanChart.xAxis.isEnabled = true
-        meanChart.axisLeft.isEnabled = true
-        meanChart.axisRight.isEnabled = true
-        meanChart.xAxis.setDrawLabels(true)
+        meanChart.legend.isEnabled = chartOn
+        meanChart.xAxis.isEnabled = chartOn
+        meanChart.axisLeft.isEnabled = chartOn
+        meanChart.axisRight.isEnabled = chartOn
+        meanChart.xAxis.setDrawLabels(chartOn)
+        meanChart.xAxis.setDrawGridLines(chartOn) // 不绘制 X 轴上的网格线
+        meanChart.axisLeft.setDrawGridLines(chartOn) // 不绘制左侧 Y 轴上的网格线
+        meanChart.axisRight.setDrawGridLines(chartOn) // 不绘制右侧 Y 轴上的网格线
 
         // 设置垂直虚线
         val xValues = mutableListOf<Float>()
