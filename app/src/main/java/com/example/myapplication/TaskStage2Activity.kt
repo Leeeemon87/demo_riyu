@@ -1,43 +1,49 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.databinding.ActivityTaskStage1Binding
+import com.example.myapplication.databinding.ActivityTaskStage2Binding
 import com.example.myapplication.ui.home.ExpandableListAdapter
 import com.example.myapplication.ui.home.GroupItem
 import com.example.myapplication.ui.home.Subitem
 
 class TaskStage2Activity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityTaskStage1Binding
+    private lateinit var binding: ActivityTaskStage2Binding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityTaskStage1Binding.inflate(layoutInflater)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // 设置返回按钮点击事件
+//        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back) // 设置返回图标
+        supportActionBar?.setHomeButtonEnabled(true)
+
+        binding = ActivityTaskStage2Binding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
-        val recyclerView = binding.expandableRecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
 
-        val items = generateDummyData() // Create your own function to generate the data
-        val adapter = ExpandableListAdapter(items)
-        recyclerView.adapter = adapter
+        val textView = findViewById<TextView>(R.id.textView)
+        textView.text = "待开发"
+
     }
-    private fun generateDummyData(): List<GroupItem> {
-        val groupItems = mutableListOf<GroupItem>()
-
-        for (i in 1..20) {
-            val subitems = mutableListOf<Subitem>()
-            for (j in 1..10) {
-                subitems.add(Subitem("Subitem $j of Group $i"))
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                // 点击 ActionBar 左上角的返回按钮
+                onBackPressed()
+                return true
             }
-//            Toast.makeText(binding.expandableRecyclerView.context, subitems.toString(), Toast.LENGTH_SHORT ).show()
-            groupItems.add(GroupItem("Group $i", subitems))
         }
-
-        return groupItems
+        return super.onOptionsItemSelected(item)
     }
+
 }
