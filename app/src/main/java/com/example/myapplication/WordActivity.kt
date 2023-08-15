@@ -96,6 +96,8 @@ class WordActivity : AppCompatActivity() {
             // 创建 KanaItem 实例
             val kanaItem = KanaItem(smallKanaList,honmei, furikana, accent)
 
+            accentArray=kanaItem.acs
+
             totalDurationMillis=kanaItem.n.toLong()*paizi
 
             val linearLayout: LinearLayout = binding.linear
@@ -193,6 +195,8 @@ class WordActivity : AppCompatActivity() {
                 }
             }
         }
+
+        testButton=binding.testSpeed
 
         testButton.setOnClickListener {
             if (!isMoving) {
@@ -360,8 +364,10 @@ class WordActivity : AppCompatActivity() {
                 "word.m4a",
                 RequestBody.create(MediaType.parse("audio/m4a"), file)
             )
-            .addFormDataPart("accent", token) // 添加 array 参数
+            .addFormDataPart("accent", accentArray.toString()) // 添加 array 参数
             .build()
+
+        Log.v("request_accent",accentArray.toString())
 
         val request: Request = Request.Builder()
             .url(uploadUrl)
