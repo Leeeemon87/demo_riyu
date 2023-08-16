@@ -9,11 +9,20 @@ import com.example.myapplication.databinding.ActivityTaskStage1Binding
 import com.example.myapplication.ui.home.GroupItem
 import com.example.myapplication.ui.home.SpaceItemDecoration
 import com.example.myapplication.ui.home.Subitem
+import org.json.JSONObject
+import java.io.InputStream
 
 class TaskStage1Activity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTaskStage1Binding
-
+    private fun loadJSONFromAsset(fileName: String): String {
+        val inputStream: InputStream = assets.open(fileName)
+        val size: Int = inputStream.available()
+        val buffer = ByteArray(size)
+        inputStream.read(buffer)
+        inputStream.close()
+        return String(buffer, Charsets.UTF_8)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTaskStage1Binding.inflate(layoutInflater)
@@ -39,14 +48,33 @@ class TaskStage1Activity : AppCompatActivity() {
     private fun generateDummyData(): List<GroupItem> {
         val groupItems = mutableListOf<GroupItem>()
 
-        for (i in 1..20) {
+        val jsonOri=loadJSONFromAsset("book.json")
+        val jsonObject = JSONObject(jsonOri)
+        val booksObject = jsonObject.getJSONObject("books")
+
+        val iterator = booksObject.keys()
+        while (iterator.hasNext()) {
             val subitems = mutableListOf<Subitem>()
-            for (j in 1..10) {
-                subitems.add(Subitem("Subitem $j of Group $i"))
+            val key = iterator.next() as String
+            val jsonTemp = booksObject.getJSONObject(key)
+
+            val tempIter = jsonTemp.keys()
+            while (tempIter.hasNext()) {
+                val sub = tempIter.next() as String
+                subitems.add(Subitem(sub, key))
             }
-//            Toast.makeText(binding.expandableRecyclerView.context, subitems.toString(), Toast.LENGTH_SHORT ).show()
-            groupItems.add(GroupItem("Group $i", subitems))
+
+            groupItems.add(GroupItem(key, subitems))
+            // 现在你可以在这里处理每个键值对
         }
+//        for (i in 1..20) {
+//            val subitems = mutableListOf<Subitem>()
+//            for (j in 1..10) {
+//                subitems.add(Subitem("Subitem $j of Group $i"))
+//            }
+////            Toast.makeText(binding.expandableRecyclerView.context, subitems.toString(), Toast.LENGTH_SHORT ).show()
+//            groupItems.add(GroupItem("Group $i", subitems))
+//        }
 
         return groupItems
     }

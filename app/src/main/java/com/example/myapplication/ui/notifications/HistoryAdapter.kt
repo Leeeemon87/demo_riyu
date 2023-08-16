@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.PitchesActivity
 import com.example.myapplication.databinding.ItemHistoryBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HistoryAdapter(private val historyData: List<HistoryItem>) :
     RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
@@ -22,6 +25,11 @@ class HistoryAdapter(private val historyData: List<HistoryItem>) :
 
         // 设置文本和点击事件
         holder.binding.historyText.text = historyItem.text
+        val timestampLong = historyItem.timestamp.toLong() // 将字符串转换为长整型时间戳
+        val sdf = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault())
+        val formattedTimestamp = sdf.format(Date(timestampLong))
+
+        holder.binding.timeStamp.text = formattedTimestamp
         holder.binding.microphoneIcon.setOnClickListener {
             // 在这里处理点击话筒图标的跳转逻辑，传递文件路径参数给 PitchesActivity
             val intent = Intent(holder.itemView.context, PitchesActivity::class.java)

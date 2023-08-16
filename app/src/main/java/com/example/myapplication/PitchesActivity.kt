@@ -96,6 +96,7 @@ class PitchesActivity : AppCompatActivity() {
         val dataSet = LineDataSet(entries, "Label")
         val lineData = LineData(dataSet)
 
+        val chartOn=false
         val waveformChart: LineChart = findViewById(R.id.waveformChart)
         // Set the LineData to the chart
         waveformChart.data = lineData
@@ -104,14 +105,12 @@ class PitchesActivity : AppCompatActivity() {
         waveformChart.description.isEnabled = false
         waveformChart.legend.isEnabled = false
 
-        waveformChart.axisLeft.isEnabled = true
-        waveformChart.axisRight.isEnabled = true
-        waveformChart.xAxis.isEnabled = true
-
-        waveformChart.axisLeft.axisMinimum=0F
-        waveformChart.axisLeft.axisMaximum=300F
-        waveformChart.axisRight.axisMinimum=0F
-        waveformChart.axisRight.axisMaximum=300F
+        waveformChart.axisLeft.isEnabled = chartOn
+        waveformChart.axisRight.isEnabled = chartOn
+        waveformChart.xAxis.isEnabled = chartOn
+        waveformChart.xAxis.setDrawGridLines(chartOn) // 不绘制 X 轴上的网格线
+        waveformChart.axisLeft.setDrawGridLines(chartOn) // 不绘制左侧 Y 轴上的网格线
+        waveformChart.axisRight.setDrawGridLines(chartOn) // 不绘制右侧 Y 轴上的网格线
 
         waveformChart.xAxis.axisMaximum=listEnds.getDouble(listEnds.length()-1).toFloat()+0.1F
         waveformChart.xAxis.axisMinimum=listStarts.getDouble(0).toFloat()-0.1F
@@ -143,7 +142,7 @@ class PitchesActivity : AppCompatActivity() {
             val colorIndex = i % colors.size
             val lineColor = colors[colorIndex]
             lineDataSet.color = lineColor
-            lineDataSet.setDrawFilled(true)
+            lineDataSet.setDrawFilled(chartOn)
             lineDataSet.fillColor = lineColor
             lineDataSet.fillAlpha = 90
             // 设置数据点颜色
@@ -164,27 +163,30 @@ class PitchesActivity : AppCompatActivity() {
 
         // 设置图表外观和行为
         meanChart.description.isEnabled = false
-        meanChart.legend.isEnabled = true
-        meanChart.xAxis.isEnabled = true
-        meanChart.axisLeft.isEnabled = true
-        meanChart.axisRight.isEnabled = true
-        meanChart.xAxis.setDrawLabels(true)
+        meanChart.legend.isEnabled = chartOn
+        meanChart.xAxis.isEnabled = chartOn
+        meanChart.axisLeft.isEnabled = chartOn
+        meanChart.axisRight.isEnabled = chartOn
+        meanChart.xAxis.setDrawLabels(chartOn)
+        meanChart.xAxis.setDrawGridLines(chartOn) // 不绘制 X 轴上的网格线
+        meanChart.axisLeft.setDrawGridLines(chartOn) // 不绘制左侧 Y 轴上的网格线
+        meanChart.axisRight.setDrawGridLines(chartOn) // 不绘制右侧 Y 轴上的网格线
 
-        // 设置垂直虚线
-        val xValues = mutableListOf<Float>()
-        for (i in 0 until listStarts.length()) {
-            xValues.add(listStarts.getDouble(i).toFloat())
-            xValues.add(listEnds.getDouble(i).toFloat())
-        }
-        setupVerticalLines(meanChart.xAxis, xValues)
-
-        val xLabels = mutableListOf<String>()
-        val xStarts = mutableListOf<Float>()
-        for (i in 0 until listStarts.length()) {
-            xStarts.add(listStarts.getDouble(i).toFloat())
-            xLabels.add(listHira.getString(i))
-        }
-        setupVerticalLinesWithLabels(meanChart.xAxis, xStarts,xLabels)
+//        // 设置垂直虚线
+//        val xValues = mutableListOf<Float>()
+//        for (i in 0 until listStarts.length()) {
+//            xValues.add(listStarts.getDouble(i).toFloat())
+//            xValues.add(listEnds.getDouble(i).toFloat())
+//        }
+//        setupVerticalLines(meanChart.xAxis, xValues)
+//
+//        val xLabels = mutableListOf<String>()
+//        val xStarts = mutableListOf<Float>()
+//        for (i in 0 until listStarts.length()) {
+//            xStarts.add(listStarts.getDouble(i).toFloat())
+//            xLabels.add(listHira.getString(i))
+//        }
+//        setupVerticalLinesWithLabels(meanChart.xAxis, xStarts,xLabels)
         // 刷新图表
         meanChart.invalidate()
 
