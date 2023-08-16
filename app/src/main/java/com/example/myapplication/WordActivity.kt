@@ -279,7 +279,7 @@ class WordActivity : AppCompatActivity() {
             lineDataSet.lineWidth = 5f
 
             var lineColor = Color.GREEN
-            if (i==answerArray.size-1){
+            if ((i==answerArray.size-1)and(answerArray[i]!=kanaItem.acs[i])){
                 lineColor=Color.RED
             }
             lineDataSet.color = lineColor
