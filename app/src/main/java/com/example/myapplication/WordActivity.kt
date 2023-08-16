@@ -119,6 +119,7 @@ class WordActivity : AppCompatActivity() {
                     startRecording()
 
                     startButton.isEnabled = false
+                    testButton.isEnabled=false
                     isMoving = true
                     currentStep = 0
                     seekBar.progress = currentStep
@@ -134,11 +135,11 @@ class WordActivity : AppCompatActivity() {
         testButton.setOnClickListener {
             if (!isMoving) {
                 isMoving = true
+                testButton.isEnabled = false
+                startButton.isEnabled=false
                 currentStep = 0
                 seekBar.progress = currentStep
                 moveSeekBar()
-                testButton.isEnabled = false
-                startButton.isEnabled=false
             }
         }
 
@@ -194,13 +195,13 @@ class WordActivity : AppCompatActivity() {
             // 计算每一步的时间间隔，考虑速度
             val stepDurationMillis:Float = totalDurationMillis.toFloat() / totalSteps
             val actualStepDurationMillis = (stepDurationMillis / speed).toLong()
-            Log.v("mis",actualStepDurationMillis.toString())
             handler.postDelayed({ moveSeekBar() }, actualStepDurationMillis)
         } else {
             isMoving = false
             stopRecording()
             uploadRecording()
             startButton.isEnabled = true
+            testButton.isEnabled=true
             val layoutParams = verticalLine.layoutParams as ConstraintLayout.LayoutParams
             layoutParams.marginStart = 0
             verticalLine.layoutParams = layoutParams
@@ -376,9 +377,11 @@ class WordActivity : AppCompatActivity() {
     }
 
     private fun stopRecording() {
-        mediaRecorder.stop()
-        mediaRecorder.release()
-        isRecording = false
+        if (isRecording) {
+            mediaRecorder.stop()
+            mediaRecorder.release()
+            isRecording = false
+        }
     }
 
     private fun uploadRecording() {
