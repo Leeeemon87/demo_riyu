@@ -1,5 +1,7 @@
 package com.example.myapplication.ui.home
 
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
@@ -9,7 +11,21 @@ class KanaItem(val smallKana:List<String>,val honmei: String, val furikana: Stri
     val n=kana.size
     val type=accent.toInt()
     val acs= comp(n,type)
+    var postAcs=comCuyin()
 
+    private  fun comCuyin():MutableList<Int>{
+        val out= mutableListOf<Int>()
+        for (i in 0 until n){
+//            遇到促音标识为正确
+            if (kana[i].toString()=="っ"){
+                out.add(2)
+            }
+            else{
+                out.add(acs[i])
+            }
+        }
+        return out
+    }
     private  fun getKana(furikana:String):MutableList<String> {
         val kanas= mutableListOf<String>()
         for (i in furikana.indices){

@@ -98,7 +98,7 @@ class WordActivity : AppCompatActivity() {
             // 创建 KanaItem 实例
             kanaItem = KanaItem(smallKanaList,honmei, furikana, accent)
 
-            accentArray=kanaItem.acs
+            accentArray=kanaItem.postAcs
 
             totalDurationMillis=kanaItem.n.toLong()*paizi
 
