@@ -48,8 +48,6 @@ class TaskStage2Activity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
 
-        val textView = findViewById<TextView>(R.id.textView)
-        textView.text = "待开发"
 
         setContentView(R.layout.activity_task_stage2)
 
