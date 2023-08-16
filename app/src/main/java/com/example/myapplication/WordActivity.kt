@@ -102,7 +102,7 @@ class WordActivity : AppCompatActivity() {
 
             totalDurationMillis=kanaItem.n.toLong()*paizi
 
-            rePaint()
+            firstPaint()
         }
         else{
             onBackPressed()
@@ -208,7 +208,7 @@ class WordActivity : AppCompatActivity() {
         }
     }
 
-    private fun rePaint(){
+    private fun firstPaint() {
         val linearLayout: LinearLayout = binding.linear
 
         for (hiragana in kanaItem.kana) {
@@ -227,7 +227,10 @@ class WordActivity : AppCompatActivity() {
             textView.setTextColor(Color.BLACK)
             linearLayout.addView(textView)
         }
+        rePaint()
+    }
 
+    private fun rePaint(){
 
         val meanChart: LineChart = binding.accentChart
         val lineDataSets = mutableListOf<ILineDataSet>() // 用于存储所有线的数据集
