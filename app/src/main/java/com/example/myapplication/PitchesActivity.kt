@@ -96,6 +96,7 @@ class PitchesActivity : AppCompatActivity() {
         val dataSet = LineDataSet(entries, "Label")
         val lineData = LineData(dataSet)
 
+        val chartOn=false
         val waveformChart: LineChart = findViewById(R.id.waveformChart)
         // Set the LineData to the chart
         waveformChart.data = lineData
@@ -104,14 +105,12 @@ class PitchesActivity : AppCompatActivity() {
         waveformChart.description.isEnabled = false
         waveformChart.legend.isEnabled = false
 
-        waveformChart.axisLeft.isEnabled = true
-        waveformChart.axisRight.isEnabled = true
-        waveformChart.xAxis.isEnabled = true
-
-        waveformChart.axisLeft.axisMinimum=0F
-        waveformChart.axisLeft.axisMaximum=300F
-        waveformChart.axisRight.axisMinimum=0F
-        waveformChart.axisRight.axisMaximum=300F
+        waveformChart.axisLeft.isEnabled = chartOn
+        waveformChart.axisRight.isEnabled = chartOn
+        waveformChart.xAxis.isEnabled = chartOn
+        waveformChart.xAxis.setDrawGridLines(chartOn) // 不绘制 X 轴上的网格线
+        waveformChart.axisLeft.setDrawGridLines(chartOn) // 不绘制左侧 Y 轴上的网格线
+        waveformChart.axisRight.setDrawGridLines(chartOn) // 不绘制右侧 Y 轴上的网格线
 
         waveformChart.xAxis.axisMaximum=listEnds.getDouble(listEnds.length()-1).toFloat()+0.1F
         waveformChart.xAxis.axisMinimum=listStarts.getDouble(0).toFloat()-0.1F
@@ -125,7 +124,6 @@ class PitchesActivity : AppCompatActivity() {
         // 定义颜色数组，用于为每个线段分配不同的颜色
         val colors = arrayOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA,Color.CYAN)
 
-        val chartOn=false
         for (i in 0 until listHira.length()) {
             val hiraName = listHira.getString(i)
             val x1 = listStarts.getDouble(i).toFloat()

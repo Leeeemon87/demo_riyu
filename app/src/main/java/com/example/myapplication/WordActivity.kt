@@ -58,6 +58,7 @@ class WordActivity : AppCompatActivity() {
     private lateinit var startButton: Button
     private lateinit var testButton: Button
     private lateinit var verticalLine: View
+    private lateinit var kanaItem:KanaItem
 
     private val handler = Handler(Looper.getMainLooper())
     private var totalDurationMillis = 1000L // 总时间，单位：毫秒
@@ -93,83 +94,15 @@ class WordActivity : AppCompatActivity() {
             val smallKana=jsonObject.getJSONArray("small")
             val smallKanaList: List<String> = (0 until smallKana.length()).map { smallKana.getString(it) }
 
+
             // 创建 KanaItem 实例
-            val kanaItem = KanaItem(smallKanaList,honmei, furikana, accent)
+            kanaItem = KanaItem(smallKanaList,honmei, furikana, accent)
 
             accentArray=kanaItem.acs
 
             totalDurationMillis=kanaItem.n.toLong()*paizi
 
-            val linearLayout: LinearLayout = binding.linear
-
-            for (hiragana in kanaItem.kana) {
-                val textView = TextView(this)
-                textView.text = hiragana
-
-                val layoutParams = LinearLayout.LayoutParams(
-                    0, // 宽度设为 0dp
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                layoutParams.weight = 1.0f // 设置权重为 1，均分宽度
-                textView.layoutParams = layoutParams
-                textView.gravity = Gravity.CENTER
-                textView.ellipsize = TextUtils.TruncateAt.END
-                textView.textSize = 16f // 设置字体大小
-                textView.setTextColor(Color.BLACK)
-                linearLayout.addView(textView)
-            }
-
-
-            val meanChart: LineChart = binding.accentChart
-            val lineDataSets = mutableListOf<ILineDataSet>() // 用于存储所有线的数据集
-
-            for (i in 0 until kanaItem.n) {
-                val hiraName = kanaItem.kana[i]
-                val x1 = i*2F
-                val y1 = kanaItem.acs[i].toFloat()
-                val x2 = i*2+1.5F
-                val y2 = kanaItem.acs[i].toFloat()
-
-                val lineEntries = mutableListOf<Entry>()
-                lineEntries.add(Entry(x1, y1))
-                lineEntries.add(Entry(x2, y2))
-
-                val lineDataSet = LineDataSet(lineEntries,kanaItem.kana[i].toString())
-                lineDataSet.lineWidth = 5f
-
-                val lineColor = Color.DKGRAY
-                lineDataSet.color = lineColor
-                lineDataSet.setDrawFilled(false)
-                // 设置数据点颜色
-                lineDataSet.setCircleColor(lineColor) // 设置为所需的颜色
-                // 禁用数据点的值显示，并设置其格式
-                lineDataSet.setDrawValues(false)
-                lineDataSet.setDrawCircles(false)
-                // 设置数据点为实心
-                lineDataSet.setDrawCircleHole(false)
-                // 设置数据点半径（大小）
-                lineDataSet.circleRadius = 2.5f // 设置为所需的半径值
-
-                lineDataSets.add(lineDataSet)
-            }
-
-            val meanData = LineData(lineDataSets)
-            meanChart.data = meanData
-
-            // 设置图表外观和行为
-            meanChart.description.isEnabled = false
-            meanChart.legend.isEnabled = false
-            meanChart.xAxis.isEnabled = false
-            meanChart.axisLeft.isEnabled = false
-            meanChart.axisRight.isEnabled = false
-            meanChart.xAxis.setDrawLabels(false)
-            meanChart.xAxis.setDrawGridLines(false) // 不绘制 X 轴上的网格线
-            meanChart.axisLeft.setDrawGridLines(false) // 不绘制左侧 Y 轴上的网格线
-            meanChart.axisRight.setDrawGridLines(false) // 不绘制右侧 Y 轴上的网格线
-            meanChart.setTouchEnabled(false)
-
-            // 刷新图表
-            meanChart.invalidate()
+            rePaint()
         }
         else{
             onBackPressed()
@@ -272,6 +205,112 @@ class WordActivity : AppCompatActivity() {
             layoutParams.marginStart = 0
             verticalLine.layoutParams = layoutParams
         }
+    }
+
+    private fun rePaint(){
+        val linearLayout: LinearLayout = binding.linear
+
+        for (hiragana in kanaItem.kana) {
+            val textView = TextView(this)
+            textView.text = hiragana
+
+            val layoutParams = LinearLayout.LayoutParams(
+                0, // 宽度设为 0dp
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            layoutParams.weight = 1.0f // 设置权重为 1，均分宽度
+            textView.layoutParams = layoutParams
+            textView.gravity = Gravity.CENTER
+            textView.ellipsize = TextUtils.TruncateAt.END
+            textView.textSize = 16f // 设置字体大小
+            textView.setTextColor(Color.BLACK)
+            linearLayout.addView(textView)
+        }
+
+
+        val meanChart: LineChart = binding.accentChart
+        val lineDataSets = mutableListOf<ILineDataSet>() // 用于存储所有线的数据集
+
+        for (i in 0 until kanaItem.n) {
+            val hiraName = kanaItem.kana[i]
+            val x1 = i*2F
+            val y1 = kanaItem.acs[i].toFloat()
+            val x2 = i*2+1.5F
+            val y2 = kanaItem.acs[i].toFloat()
+
+            val lineEntries = mutableListOf<Entry>()
+            lineEntries.add(Entry(x1, y1))
+            lineEntries.add(Entry(x2, y2))
+
+            val lineDataSet = LineDataSet(lineEntries,kanaItem.kana[i].toString())
+            lineDataSet.lineWidth = 5f
+
+            val lineColor = Color.DKGRAY
+            lineDataSet.color = lineColor
+            lineDataSet.setDrawFilled(false)
+            // 设置数据点颜色
+            lineDataSet.setCircleColor(lineColor) // 设置为所需的颜色
+            // 禁用数据点的值显示，并设置其格式
+            lineDataSet.setDrawValues(false)
+            lineDataSet.setDrawCircles(false)
+            // 设置数据点为实心
+            lineDataSet.setDrawCircleHole(false)
+            // 设置数据点半径（大小）
+            lineDataSet.circleRadius = 2.5f // 设置为所需的半径值
+
+            lineDataSets.add(lineDataSet)
+        }
+
+        for (i in 0 until answerArray.size) {
+            val hiraName = kanaItem.kana[i]
+            val x1 = i*2F
+            val y1 = answerArray[i].toFloat()
+            val x2 = i*2+1.5F
+            val y2 = answerArray[i].toFloat()
+
+            val lineEntries = mutableListOf<Entry>()
+            lineEntries.add(Entry(x1, y1))
+            lineEntries.add(Entry(x2, y2))
+
+            val lineDataSet = LineDataSet(lineEntries,kanaItem.kana[i].toString())
+            lineDataSet.lineWidth = 5f
+
+            var lineColor = Color.GREEN
+            if (i==answerArray.size-1){
+                lineColor=Color.RED
+            }
+            lineDataSet.color = lineColor
+            lineDataSet.setDrawFilled(false)
+            // 设置数据点颜色
+            lineDataSet.setCircleColor(lineColor) // 设置为所需的颜色
+            // 禁用数据点的值显示，并设置其格式
+            lineDataSet.setDrawValues(false)
+            lineDataSet.setDrawCircles(false)
+            // 设置数据点为实心
+            lineDataSet.setDrawCircleHole(false)
+            // 设置数据点半径（大小）
+            lineDataSet.circleRadius = 2.5f // 设置为所需的半径值
+
+            lineDataSets.add(lineDataSet)
+        }
+
+        val meanData = LineData(lineDataSets)
+        meanChart.data = meanData
+
+        // 设置图表外观和行为
+        meanChart.description.isEnabled = false
+        meanChart.legend.isEnabled = false
+        meanChart.xAxis.isEnabled = false
+        meanChart.axisLeft.isEnabled = false
+        meanChart.axisRight.isEnabled = false
+        meanChart.xAxis.setDrawLabels(false)
+        meanChart.xAxis.setDrawGridLines(false) // 不绘制 X 轴上的网格线
+        meanChart.axisLeft.setDrawGridLines(false) // 不绘制左侧 Y 轴上的网格线
+        meanChart.axisRight.setDrawGridLines(false) // 不绘制右侧 Y 轴上的网格线
+        meanChart.setTouchEnabled(false)
+
+        // 刷新图表
+        meanChart.invalidate()
     }
 
     private fun loadJSONFromAsset(fileName: String): String {
@@ -391,10 +430,12 @@ class WordActivity : AppCompatActivity() {
                         val jsonObject = JSONObject(responseData)
                         val code = jsonObject.getString("code")
                         val info = jsonObject.getString("info")
-                        val word = jsonObject.getString("data")
+                        val smallKana=jsonObject.getJSONArray("accent")
+                        answerArray= (0 until smallKana.length()).map { smallKana.getInt(it) }
 
                         this@WordActivity.runOnUiThread {
-                            Log.v("con","success")
+                            Log.v("con",answerArray.toString())
+                            rePaint()
 //                            Toast.makeText(this, "Status: $code, Message: $word", Toast.LENGTH_LONG).show()
                         }
 
