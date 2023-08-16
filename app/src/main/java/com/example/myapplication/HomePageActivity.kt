@@ -10,14 +10,11 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.MainActivity
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import okhttp3.*
@@ -28,7 +25,7 @@ import org.json.JSONObject
 import android.content.Context
 import java.io.File
 import android.net.Uri
-import androidx.compose.ui.graphics.ImageBitmap
+
 class HomePageActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,9 +114,9 @@ class HomePageActivity : ComponentActivity() {
             // 头像
             Image(
                 painter = if (avatarExists) {
-                    painterResource(id = R.drawable.sexy) // 使用头像文件
+                    painterResource(id = R.drawable.seka) // 使用头像文件
                 } else {
-                    painterResource(id = R.drawable.sexy) // 使用默认头像资源
+                    painterResource(id = R.drawable.seka) // 使用默认头像资源
                 },
                 contentDescription = null,
                 modifier = Modifier
