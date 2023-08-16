@@ -94,7 +94,6 @@ class WordActivity : AppCompatActivity() {
             val smallKana=jsonObject.getJSONArray("small")
             val smallKanaList: List<String> = (0 until smallKana.length()).map { smallKana.getString(it) }
 
-
             // 创建 KanaItem 实例
             kanaItem = KanaItem(smallKanaList,honmei, furikana, accent)
 
@@ -266,11 +265,15 @@ class WordActivity : AppCompatActivity() {
         }
 
         for (i in 0 until answerArray.size) {
+            var yVal=answerArray[i].toFloat()
+            if (answerArray[i]==2){
+                yVal=kanaItem.acs[i].toFloat()
+            }
             val hiraName = kanaItem.kana[i]
             val x1 = i*2F
-            val y1 = answerArray[i].toFloat()
+            val y1 = yVal
             val x2 = i*2+1.5F
-            val y2 = answerArray[i].toFloat()
+            val y2 = yVal
 
             val lineEntries = mutableListOf<Entry>()
             lineEntries.add(Entry(x1, y1))
