@@ -264,28 +264,15 @@ class WordActivity : AppCompatActivity() {
             lineDataSets.add(lineDataSet)
         }
 
-        for (i in 0 until answerArray.size) {
-            var yVal=answerArray[i].toFloat()
-            if (answerArray[i]==2){
-                yVal=kanaItem.acs[i].toFloat()
-            }
-            val hiraName = kanaItem.kana[i]
-            val x1 = i*2F
-            val y1 = yVal
-            val x2 = i*2+1.5F
-            val y2 = yVal
-
+        if((answerArray.size==2) and (answerArray[1].toFloat()!=kanaItem.acs[1].toFloat())) {
             val lineEntries = mutableListOf<Entry>()
-            lineEntries.add(Entry(x1, y1))
-            lineEntries.add(Entry(x2, y2))
+            lineEntries.add(Entry(0F, 1-answerArray[0].toFloat()))
+            lineEntries.add(Entry(1.5F, 1-answerArray[0].toFloat()))
 
-            val lineDataSet = LineDataSet(lineEntries,kanaItem.kana[i].toString())
+            val lineDataSet = LineDataSet(lineEntries,kanaItem.kana[0].toString())
             lineDataSet.lineWidth = 5f
 
-            var lineColor = Color.GREEN
-            if ((i==answerArray.size-1)and(answerArray[i]!=kanaItem.acs[i])){
-                lineColor=Color.RED
-            }
+            var lineColor = Color.RED
             lineDataSet.color = lineColor
             lineDataSet.setDrawFilled(false)
             // 设置数据点颜色
@@ -300,6 +287,45 @@ class WordActivity : AppCompatActivity() {
 
             lineDataSets.add(lineDataSet)
         }
+        else {
+            for (i in 0 until answerArray.size) {
+                var yVal=answerArray[i].toFloat()
+                if (answerArray[i]==2){
+                    yVal=kanaItem.acs[i].toFloat()
+                }
+                val hiraName = kanaItem.kana[i]
+                val x1 = i*2F
+                val y1 = yVal
+                val x2 = i*2+1.5F
+                val y2 = yVal
+
+                val lineEntries = mutableListOf<Entry>()
+                lineEntries.add(Entry(x1, y1))
+                lineEntries.add(Entry(x2, y2))
+
+                val lineDataSet = LineDataSet(lineEntries,kanaItem.kana[i].toString())
+                lineDataSet.lineWidth = 5f
+
+                var lineColor = Color.GREEN
+                if ((i==answerArray.size-1)and(answerArray[i]!=kanaItem.acs[i])){
+                    lineColor=Color.RED
+                }
+                lineDataSet.color = lineColor
+                lineDataSet.setDrawFilled(false)
+                // 设置数据点颜色
+                lineDataSet.setCircleColor(lineColor) // 设置为所需的颜色
+                // 禁用数据点的值显示，并设置其格式
+                lineDataSet.setDrawValues(false)
+                lineDataSet.setDrawCircles(false)
+                // 设置数据点为实心
+                lineDataSet.setDrawCircleHole(false)
+                // 设置数据点半径（大小）
+                lineDataSet.circleRadius = 2.5f // 设置为所需的半径值
+
+                lineDataSets.add(lineDataSet)
+            }
+        }
+
 
         val meanData = LineData(lineDataSets)
         meanChart.data = meanData

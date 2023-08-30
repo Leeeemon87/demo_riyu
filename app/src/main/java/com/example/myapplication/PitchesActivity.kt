@@ -96,7 +96,7 @@ class PitchesActivity : AppCompatActivity() {
         val dataSet = LineDataSet(entries, "Label")
         val lineData = LineData(dataSet)
 
-        val chartOn=false
+        val chartOn=true
         val waveformChart: LineChart = findViewById(R.id.waveformChart)
         // Set the LineData to the chart
         waveformChart.data = lineData
