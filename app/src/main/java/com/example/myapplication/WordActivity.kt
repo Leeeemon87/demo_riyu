@@ -519,7 +519,7 @@ class WordActivity : AppCompatActivity() {
     }
 
     private fun uploadRecording() {
-        val uploadUrl = "http://49.233.22.132:8080/demo/word"
+        val uploadUrl = "https://49.233.22.132:8080/demo/word"
         val outputFile = "${this.externalCacheDir?.absolutePath}/word.m4a"
 
         val file = File(outputFile)

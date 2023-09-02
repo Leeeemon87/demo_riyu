@@ -64,7 +64,7 @@ class HomePageActivity : ComponentActivity() {
         jsonObject.put("deviceId", deviceID)
 
 
-        val url = "http://49.233.22.132:8080/demo/user/lastname?deviceId=$deviceID"
+        val url = "https://49.233.22.132:8080/demo/user/lastname?deviceId=$deviceID"
 
         val request = Request.Builder()
             .url(url)
@@ -151,7 +151,7 @@ class HomePageActivity : ComponentActivity() {
                     val client = OkHttpClient()
 
 // 构建 POST 请求
-                    val url = "http://49.233.22.132:8080/demo/user/add" // 替换为实际的 API URL
+                    val url = "https://49.233.22.132:8080/demo/user/add" // 替换为实际的 API URL
                     val request = Request.Builder()
                         .url(url)
                         .post(requestBody)
