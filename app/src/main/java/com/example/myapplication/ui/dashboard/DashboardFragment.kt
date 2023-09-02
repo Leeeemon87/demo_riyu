@@ -201,7 +201,7 @@ class DashboardFragment : Fragment() {
         val cancelButton=binding.recordButtonCancel
         checkButton.visibility=View.VISIBLE
         cancelButton.visibility=View.VISIBLE
-        val uploadUrl = "https://49.233.22.132:8080/demo/upload"
+        val uploadUrl = "http://49.233.22.132:8080/demo/upload"
         val outputFile = "${requireContext().externalCacheDir?.absolutePath}/recording3.m4a"
 
         val file = File(outputFile)
@@ -279,7 +279,7 @@ class DashboardFragment : Fragment() {
                                 .readTimeout(60, TimeUnit.SECONDS)
                                 .build()
 
-                            val url = "https://49.233.22.132:8080/demo/calculate" // 替换为实际的 API URL
+                            val url = "http://49.233.22.132:8080/demo/calculate" // 替换为实际的 API URL
                             val request = Request.Builder()
                                 .url(url)
                                 .post(requestBody1)
